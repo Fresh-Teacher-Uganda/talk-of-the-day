@@ -1,12 +1,12 @@
+
 import React, { useState, useMemo } from 'react';
-import { Search, Download, Eye, BookOpen, FileText, GraduationCap, Package, Clock, ArrowLeft, Grid, List, ExternalLink, Menu, X, Filter } from 'lucide-react';
+import { Search, Download, Eye, BookOpen, FileText, GraduationCap, Package, Clock, ArrowLeft, Grid, List, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { AdvancedPagination } from '@/components/ui/pagination-advanced';
 import { ScrollToTop } from '@/components/ui/scroll-to-top';
 import { LibraryDocument, libraryData, classes, subjects, resourceTypes } from '@/data/libraryData';
@@ -64,9 +64,6 @@ export const Library: React.FC = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  
-  // UI state
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Get filtered resources based on current step and filters
   const filteredResources = useMemo(() => {
@@ -269,309 +266,231 @@ export const Library: React.FC = () => {
     </Card>
   );
 
-  const renderSidebarContent = () => (
-    <div className="p-4 space-y-4">
-      <div>
-        <h3 className="font-semibold mb-2">Search & Filter</h3>
-        <div className="space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search resources..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          
-          {classSubjects.length > 0 && (
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-              <SelectTrigger>
-                <SelectValue placeholder="Subject" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Subjects</SelectItem>
-                {classSubjects.map((subject) => (
-                  <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      </div>
-
-      {currentStep === 'resource-list' && (
-        <div>
-          <h3 className="font-semibold mb-2">View Options</h3>
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              className="flex-1"
-            >
-              <Grid className="h-4 w-4 mr-1" />
-              Grid
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className="flex-1"
-            >
-              <List className="h-4 w-4 mr-1" />
-              List
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Collapsible Sidebar */}
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent side="left" className="w-80 p-0">
-          <div className="p-4 border-b">
-            <h2 className="font-semibold">Library Filters</h2>
-          </div>
-          {renderSidebarContent()}
-        </SheetContent>
-      </Sheet>
-
       {/* Main Content */}
-      <div className="flex">
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:block w-80 border-r bg-card">
-          <div className="p-4 border-b">
-            <h2 className="font-semibold">Library Filters</h2>
-          </div>
-          {renderSidebarContent()}
-        </div>
+      <div className="w-full">
+        {currentStep === 'bookshelf' && (
+          <div className="min-h-screen p-4">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold mb-4">School Library</h1>
+              <p className="text-lg text-muted-foreground">Select a class to browse educational resources</p>
+            </div>
+            
+            {/* Bookshelf Display */}
+            <div className="container mx-auto max-w-6xl">
+              <style>{`
+                .bookshelf .thumb {
+                  display: inline-block;
+                  cursor: pointer;
+                  margin: 0px 0.5%;
+                  width: 15% !important;
+                  box-shadow: 0px 1px 3px rgba(0, 0, 0, .3);
+                  max-width: 120px;
+                  transition: transform 0.2s ease;
+                }
 
-        {/* Main Content Area */}
-        <div className="flex-1 min-w-0">
-          {currentStep === 'bookshelf' && (
-            <div className="min-h-screen p-4">
-              {/* Mobile Sidebar Toggle */}
-              <div className="lg:hidden mb-4">
-                <Button variant="outline" onClick={() => setSidebarOpen(true)}>
-                  <Menu className="h-4 w-4 mr-2" />
-                  Filters
-                </Button>
-              </div>
+                .bookshelf .thumb:hover {
+                  transform: translateY(-5px);
+                }
 
-              <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold mb-4">School Library</h1>
-                <p className="text-lg text-muted-foreground">Select a class to browse educational resources</p>
-              </div>
-              
-              {/* Bookshelf Display */}
-              <div className="container mx-auto max-w-6xl">
-                <style>{`
+                .bookshelf .thumb img {
+                  width: 100%;
+                  display: block;
+                  vertical-align: top;
+                }
+
+                .bookshelf .shelf-img {
+                  z-index: 0;
+                  height: auto;
+                  max-width: 100%;
+                  vertical-align: top;
+                  margin-top: -12px;
+                }
+
+                .bookshelf .covers {
+                  width: 100%;
+                  height: auto;
+                  z-index: 99;
+                  text-align: center;
+                }
+
+                .bookshelf {
+                  text-align: center;
+                  padding: 20px 0;
+                }
+
+                @media (max-width: 768px) {
                   .bookshelf .thumb {
-                    display: inline-block;
-                    cursor: pointer;
-                    margin: 0px 0.5%;
-                    width: 15% !important;
-                    box-shadow: 0px 1px 3px rgba(0, 0, 0, .3);
-                    max-width: 120px;
-                    transition: transform 0.2s ease;
+                    width: 30% !important;
+                    max-width: 140px;
+                    margin: 0px 1.5%;
                   }
-
-                  .bookshelf .thumb:hover {
-                    transform: translateY(-5px);
-                  }
-
-                  .bookshelf .thumb img {
-                    width: 100%;
-                    display: block;
-                    vertical-align: top;
-                  }
-
+                  
                   .bookshelf .shelf-img {
-                    z-index: 0;
-                    height: auto;
-                    max-width: 100%;
-                    vertical-align: top;
-                    margin-top: -12px;
+                    margin-top: -8px;
                   }
+                }
+              `}</style>
 
-                  .bookshelf .covers {
-                    width: 100%;
-                    height: auto;
-                    z-index: 99;
-                    text-align: center;
-                  }
-
-                  .bookshelf {
-                    text-align: center;
-                    padding: 20px 0;
-                  }
-
-                  @media (max-width: 768px) {
-                    .bookshelf .thumb {
-                      width: 30% !important;
-                      max-width: 140px;
-                      margin: 0px 1.5%;
-                    }
-                    
-                    .bookshelf .shelf-img {
-                      margin-top: -8px;
-                    }
-                  }
-                `}</style>
-
-                <div className="space-y-8">
-                  {/* First Shelf - Nursery Classes */}
-                  <div className="bookshelf">
-                    <div className="covers">
-                      {['Baby Class', 'Middle Class', 'Top Class'].map((classKey) => (
-                        <div key={classKey} className="thumb book-1">
-                          <button 
-                            onClick={() => handleClassSelect(classKey)}
-                            className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
-                          >
-                            <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
-                  </div>
-
-                  {/* Second Shelf - Lower Primary */}
-                  <div className="bookshelf">
-                    <div className="covers">
-                      {['Primary One', 'Primary Two', 'Primary Three'].map((classKey) => (
-                        <div key={classKey} className="thumb book-1">
-                          <button 
-                            onClick={() => handleClassSelect(classKey)}
-                            className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
-                          >
-                            <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
-                  </div>
-
-                  {/* Third Shelf - Upper Primary Part 1 */}
-                  <div className="bookshelf">
-                    <div className="covers">
-                      {['Primary Four', 'Primary Five', 'Primary Six'].map((classKey) => (
-                        <div key={classKey} className="thumb book-1">
-                          <button 
-                            onClick={() => handleClassSelect(classKey)}
-                            className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
-                          >
-                            <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
-                  </div>
-
-                  {/* Fourth Shelf - Upper Primary Part 2 */}
-                  <div className="bookshelf">
-                    <div className="covers">
-                      <div className="thumb book-1">
+              <div className="space-y-8">
+                {/* First Shelf - Nursery Classes */}
+                <div className="bookshelf">
+                  <div className="covers">
+                    {['Baby Class', 'Middle Class', 'Top Class'].map((classKey) => (
+                      <div key={classKey} className="thumb book-1">
                         <button 
-                          onClick={() => handleClassSelect('Primary Seven')}
+                          onClick={() => handleClassSelect(classKey)}
                           className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
                         >
-                          <img src={classImages['Primary Seven']} alt="Primary Seven" />
+                          <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
                         </button>
                       </div>
-                    </div>
-                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                    ))}
                   </div>
+                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
                 </div>
-              </div>
-            </div>
-          )}
 
-          {currentStep === 'class-overview' && (
-            <div className="p-4 lg:p-6">
-              {/* Mobile Sidebar Toggle */}
-              <div className="lg:hidden mb-4">
-                <Button variant="outline" onClick={() => setSidebarOpen(true)}>
-                  <Menu className="h-4 w-4 mr-2" />
-                  Filters
-                </Button>
-              </div>
-
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" onClick={handleBackToBookshelf}>
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Library
-                  </Button>
-                  <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold">{selectedClass}</h1>
-                    <p className="text-muted-foreground">Choose a resource type to browse</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Resource Type Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                {resourceTypes.map((type) => (
-                  <Card 
-                    key={type.id} 
-                    className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
-                    onClick={() => handleResourceTypeSelect(type.id)}
-                  >
-                    <CardContent className="p-6 text-center">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                          {getResourceTypeIcon(type.id)}
-                        </div>
-                        <h3 className="font-semibold text-sm">{type.label}</h3>
-                        <Badge variant="secondary" className="text-xs">
-                          {resourceTypeCounts[type.id] || 0} items
-                        </Badge>
+                {/* Second Shelf - Lower Primary */}
+                <div className="bookshelf">
+                  <div className="covers">
+                    {['Primary One', 'Primary Two', 'Primary Three'].map((classKey) => (
+                      <div key={classKey} className="thumb book-1">
+                        <button 
+                          onClick={() => handleClassSelect(classKey)}
+                          className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                        >
+                          <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
+                        </button>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    ))}
+                  </div>
+                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                </div>
+
+                {/* Third Shelf - Upper Primary Part 1 */}
+                <div className="bookshelf">
+                  <div className="covers">
+                    {['Primary Four', 'Primary Five', 'Primary Six'].map((classKey) => (
+                      <div key={classKey} className="thumb book-1">
+                        <button 
+                          onClick={() => handleClassSelect(classKey)}
+                          className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                        >
+                          <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                </div>
+
+                {/* Fourth Shelf - Upper Primary Part 2 */}
+                <div className="bookshelf">
+                  <div className="covers">
+                    <div className="thumb book-1">
+                      <button 
+                        onClick={() => handleClassSelect('Primary Seven')}
+                        className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                      >
+                        <img src={classImages['Primary Seven']} alt="Primary Seven" />
+                      </button>
+                    </div>
+                  </div>
+                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {currentStep === 'resource-list' && (
-            <div className="p-4 lg:p-6">
-              {/* Mobile Sidebar Toggle */}
-              <div className="lg:hidden mb-4">
-                <Button variant="outline" onClick={() => setSidebarOpen(true)}>
-                  <Menu className="h-4 w-4 mr-2" />
-                  Filters
+        {currentStep === 'class-overview' && (
+          <div className="p-4 lg:p-6">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" onClick={handleBackToBookshelf}>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Library
                 </Button>
+                <div>
+                  <h1 className="text-2xl lg:text-3xl font-bold">{selectedClass}</h1>
+                  <p className="text-muted-foreground">Choose a resource type to browse</p>
+                </div>
               </div>
+            </div>
 
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" onClick={handleBackToClassOverview}>
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to {selectedClass}
-                  </Button>
-                  <div>
-                    <h1 className="text-xl lg:text-2xl font-bold">
-                      {resourceTypes.find(rt => rt.id === selectedResourceType)?.label}
-                    </h1>
-                    <p className="text-muted-foreground text-sm">
-                      {selectedClass} • {filteredResources.length} resources
-                    </p>
-                  </div>
+            {/* Resource Type Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              {resourceTypes.map((type) => (
+                <Card 
+                  key={type.id} 
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                  onClick={() => handleResourceTypeSelect(type.id)}
+                >
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        {getResourceTypeIcon(type.id)}
+                      </div>
+                      <h3 className="font-semibold text-sm">{type.label}</h3>
+                      <Badge variant="secondary" className="text-xs">
+                        {resourceTypeCounts[type.id] || 0} items
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentStep === 'resource-list' && (
+          <div className="p-4 lg:p-6">
+            {/* Header with inline filters */}
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" onClick={handleBackToClassOverview}>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to {selectedClass}
+                </Button>
+                <div>
+                  <h1 className="text-xl lg:text-2xl font-bold">
+                    {resourceTypes.find(rt => rt.id === selectedResourceType)?.label}
+                  </h1>
+                  <p className="text-muted-foreground text-sm">
+                    {selectedClass} • {filteredResources.length} resources
+                  </p>
+                </div>
+              </div>
+              
+              {/* Inline Search and Filters */}
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="relative flex-1 min-w-64">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    placeholder="Search resources..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
                 
-                {/* Desktop View Toggle */}
-                <div className="hidden lg:flex items-center gap-2">
+                {classSubjects.length > 0 && (
+                  <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Subjects</SelectItem>
+                      {classSubjects.map((subject) => (
+                        <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                <div className="flex items-center gap-2">
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'outline'}
                     size="sm"
@@ -588,41 +507,41 @@ export const Library: React.FC = () => {
                   </Button>
                 </div>
               </div>
-
-              {/* Resources Grid/List */}
-              {paginatedResources.length > 0 ? (
-                <div className={
-                  viewMode === 'grid' 
-                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6"
-                    : "space-y-3 mb-6"
-                }>
-                  {paginatedResources.map(resource => 
-                    viewMode === 'grid' ? renderResourceCard(resource) : renderResourceList(resource)
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">No resources found</h3>
-                  <p className="text-muted-foreground">Try adjusting your search or filters</p>
-                </div>
-              )}
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <AdvancedPagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={filteredResources.length}
-                  itemsPerPage={itemsPerPage}
-                  onPageChange={handlePageChange}
-                  onItemsPerPageChange={handleItemsPerPageChange}
-                  onJumpToPage={handleJumpToPage}
-                />
-              )}
             </div>
-          )}
-        </div>
+
+            {/* Resources Grid/List */}
+            {paginatedResources.length > 0 ? (
+              <div className={
+                viewMode === 'grid' 
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6"
+                  : "space-y-3 mb-6"
+              }>
+                {paginatedResources.map(resource => 
+                  viewMode === 'grid' ? renderResourceCard(resource) : renderResourceList(resource)
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-medium mb-2">No resources found</h3>
+                <p className="text-muted-foreground">Try adjusting your search or filters</p>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <AdvancedPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filteredResources.length}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
+                onItemsPerPageChange={handleItemsPerPageChange}
+                onJumpToPage={handleJumpToPage}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Preview Dialog */}
