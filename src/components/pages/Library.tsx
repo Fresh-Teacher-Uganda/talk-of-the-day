@@ -1,6 +1,7 @@
 
-import React, { useState, useMemo } from 'react';
-import { Search, Download, Eye, BookOpen, FileText, GraduationCap, Package, Clock, ArrowLeft, Grid, List, ExternalLink } from 'lucide-react';
+import React, { useState, useMemo, useRef } from 'react';
+import { Search, Download, Eye, BookOpen, FileText, GraduationCap, Package, Clock, ArrowLeft, Grid, List, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import HTMLFlipBook from 'react-pageflip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,6 +61,9 @@ export const Library: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewingDocument, setViewingDocument] = useState<LibraryDocument | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  
+  // Flipbook ref for navigation
+  const flipBookRef = useRef<any>(null);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -173,6 +177,49 @@ export const Library: React.FC = () => {
   const handleJumpToPage = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Flipbook navigation handlers
+  const nextPage = () => {
+    flipBookRef.current?.pageFlip().flipNext();
+  };
+
+  const prevPage = () => {
+    flipBookRef.current?.pageFlip().flipPrev();
+  };
+
+  // Generate sample pages for the flipbook preview
+  const generatePreviewPages = (document: LibraryDocument) => {
+    const pages = [];
+    const totalPages = Math.floor(Math.random() * 20) + 4; // Random pages between 4-24
+    
+    for (let i = 0; i < totalPages; i++) {
+      pages.push(
+        <div key={i} className="page bg-white p-6 border border-border/20 shadow-sm">
+          <div className="h-full flex flex-col">
+            <div className="text-xs text-muted-foreground mb-2">Page {i + 1}</div>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">{document.title}</h3>
+            <div className="flex-1 space-y-3">
+              <div className="h-3 bg-muted rounded animate-pulse"></div>
+              <div className="h-3 bg-muted rounded animate-pulse w-4/5"></div>
+              <div className="h-3 bg-muted rounded animate-pulse w-3/4"></div>
+              <div className="h-3 bg-muted rounded animate-pulse"></div>
+              <div className="h-3 bg-muted rounded animate-pulse w-5/6"></div>
+              <div className="h-20 bg-muted/50 rounded mt-4 flex items-center justify-center">
+                <span className="text-xs text-muted-foreground">Content Preview</span>
+              </div>
+              <div className="h-3 bg-muted rounded animate-pulse w-3/5"></div>
+              <div className="h-3 bg-muted rounded animate-pulse"></div>
+              <div className="h-3 bg-muted rounded animate-pulse w-4/5"></div>
+            </div>
+            <div className="text-xs text-muted-foreground mt-4">
+              {document.subject} • {document.class}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return pages;
   };
 
   // Render functions
@@ -544,27 +591,83 @@ export const Library: React.FC = () => {
         )}
       </div>
 
-      {/* Preview Dialog */}
+      {/* Preview Dialog with Flipbook */}
       <Dialog open={!!viewingDocument} onOpenChange={() => setViewingDocument(null)}>
-        <DialogContent className="max-w-4xl h-[80vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {viewingDocument && getResourceTypeIcon(viewingDocument.type)}
-              {viewingDocument?.title}
+        <DialogContent className="max-w-5xl h-[85vh] p-4">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {viewingDocument && getResourceTypeIcon(viewingDocument.type)}
+                {viewingDocument?.title}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={prevPage}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={nextPage}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => viewingDocument && handleDownload(viewingDocument)}
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  Download
+                </Button>
+              </div>
             </DialogTitle>
           </DialogHeader>
-          <div className="flex-1 bg-muted rounded-lg p-8 flex items-center justify-center">
-            <div className="text-center">
-              <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-medium mb-2">Document Preview</h3>
-              <p className="text-muted-foreground mb-4">
-                Preview functionality would be implemented here
-              </p>
-              <Button onClick={() => viewingDocument && handleDownload(viewingDocument)}>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Open Document
-              </Button>
-            </div>
+          
+          <div className="flex-1 flex items-center justify-center bg-muted/30 rounded-lg overflow-hidden">
+            {viewingDocument && (
+              <div className="flipbook-container">
+                <HTMLFlipBook
+                  ref={flipBookRef}
+                  width={300}
+                  height={400}
+                  size="stretch"
+                  minWidth={250}
+                  maxWidth={350}
+                  minHeight={350}
+                  maxHeight={450}
+                  maxShadowOpacity={0.3}
+                  showCover={true}
+                  mobileScrollSupport={true}
+                  className="flipbook"
+                  style={{}}
+                  startPage={0}
+                  drawShadow={true}
+                  flippingTime={1000}
+                  usePortrait={true}
+                  startZIndex={0}
+                  autoSize={true}
+                  clickEventForward={true}
+                  useMouseEvents={true}
+                  swipeDistance={30}
+                  showPageCorners={true}
+                  disableFlipByClick={false}
+                >
+                  {generatePreviewPages(viewingDocument)}
+                </HTMLFlipBook>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex-shrink-0 text-center mt-2">
+            <p className="text-xs text-muted-foreground">
+              This is a preview simulation. Click and drag page corners or use the navigation buttons to flip pages.
+            </p>
           </div>
         </DialogContent>
       </Dialog>
