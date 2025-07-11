@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
-import { generateStudentsFromPhotos } from '@/data/pupilsData';
+import { generateStudentsFromDatabase } from '@/data/pupilsData';
 
 export interface Student {
   id: string;
@@ -71,7 +71,7 @@ export const useStudents = () => {
     setLoading(true);
     // Simulate API call
     setTimeout(() => {
-      const studentsWithPhotos = generateStudentsFromPhotos();
+      const studentsWithPhotos = generateStudentsFromDatabase();
       setAllStudents(studentsWithPhotos);
       setLoading(false);
     }, 1000);
