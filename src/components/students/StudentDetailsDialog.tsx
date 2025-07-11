@@ -43,9 +43,28 @@ export const StudentDetailsDialog: React.FC<StudentDetailsDialogProps> = ({
         <div className="space-y-6">
           {/* Header */}
           <div className="text-center border-b pb-4">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <User className="h-8 w-8 text-blue-600" />
-            </div>
+            {student.photo ? (
+              <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-3 border-2 border-gray-200">
+                <img 
+                  src={student.photo} 
+                  alt={student.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center" style={{ display: 'none' }}>
+                  <User className="h-8 w-8 text-blue-600" />
+                </div>
+              </div>
+            ) : (
+              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <User className="h-8 w-8 text-blue-600" />
+              </div>
+            )}
             <h3 className="text-xl font-semibold">{student.name}</h3>
             <p className="text-gray-600">Student ID: {student.id}</p>
           </div>

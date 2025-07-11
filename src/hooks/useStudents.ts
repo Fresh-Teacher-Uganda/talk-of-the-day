@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
+import { generateStudentsFromDatabase } from '@/data/pupilsData';
 
 export interface Student {
   id: string;
@@ -14,6 +15,7 @@ export interface Student {
   email?: string;
   address?: string;
   status: 'active' | 'inactive' | 'suspended' | 'archived' | 'expelled';
+  photo?: string;
 }
 
 export const useStudents = () => {
@@ -69,19 +71,8 @@ export const useStudents = () => {
     setLoading(true);
     // Simulate API call
     setTimeout(() => {
-      const mockStudents: Student[] = [
-        { id: 'SS001', name: 'Sarah Nakato', class: 'P.7A', age: 13, parent: 'Robert Nakato', phone: '+256 700 123 456', fees: 'Paid', status: 'active' },
-        { id: 'SS002', name: 'John Mukasa', class: 'P.6B', age: 12, parent: 'Grace Mukasa', phone: '+256 701 234 567', fees: 'Pending', status: 'active' },
-        { id: 'SS003', name: 'Mary Namuli', class: 'P.5A', age: 11, parent: 'Peter Namuli', phone: '+256 702 345 678', fees: 'Paid', status: 'suspended' },
-        { id: 'SS004', name: 'David Ssali', class: 'P.7B', age: 14, parent: 'Jane Ssali', phone: '+256 703 456 789', fees: 'Paid', status: 'active' },
-        { id: 'SS005', name: 'Ruth Auma', class: 'P.4A', age: 10, parent: 'James Auma', phone: '+256 704 567 890', fees: 'Overdue', status: 'active' },
-        { id: 'SS006', name: 'Samuel Okello', class: 'P.6A', age: 12, parent: 'Helen Okello', phone: '+256 705 678 901', fees: 'Paid', status: 'archived' },
-        { id: 'SS007', name: 'Grace Nalubega', class: 'P.5B', age: 11, parent: 'Moses Nalubega', phone: '+256 706 789 012', fees: 'Pending', status: 'active' },
-        { id: 'SS008', name: 'Emmanuel Kato', class: 'P.7A', age: 13, parent: 'Sarah Kato', phone: '+256 707 890 123', fees: 'Paid', status: 'expelled' },
-        { id: 'SS009', name: 'Alice Tendo', class: 'P.5A', age: 11, parent: 'Paul Tendo', phone: '+256 708 901 234', fees: 'Paid', status: 'active' },
-        { id: 'SS010', name: 'Peter Ssempala', class: 'P.6B', age: 12, parent: 'Mary Ssempala', phone: '+256 709 012 345', fees: 'Overdue', status: 'active' },
-      ];
-      setAllStudents(mockStudents);
+      const studentsWithPhotos = generateStudentsFromDatabase();
+      setAllStudents(studentsWithPhotos);
       setLoading(false);
     }, 1000);
   };

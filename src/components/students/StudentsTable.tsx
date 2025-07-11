@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Student } from '@/hooks/useStudents';
+import { User } from 'lucide-react';
 
 interface StudentsTableProps {
   students: Student[];
@@ -148,7 +149,33 @@ export const StudentsTable: React.FC<StudentsTableProps> = ({
             {students.map((student) => (
               <TableRow key={student.id}>
                 <TableCell className="font-medium">{student.id}</TableCell>
-                <TableCell>{student.name}</TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-3">
+                    {student.photo ? (
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-200">
+                        <img 
+                          src={student.photo} 
+                          alt={student.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                        <div className="absolute inset-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center" style={{ display: 'none' }}>
+                          <User className="h-5 w-5 text-blue-600" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <User className="h-5 w-5 text-blue-600" />
+                      </div>
+                    )}
+                    <span className="font-medium">{student.name}</span>
+                  </div>
+                </TableCell>
                 <TableCell>{student.class}</TableCell>
                 <TableCell>{student.age}</TableCell>
                 <TableCell>{student.parent}</TableCell>
