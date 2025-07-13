@@ -3,7 +3,8 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, Users, BookOpen, ChevronRight } from 'lucide-react';
+import { Download, Users, BookOpen, ChevronRight, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import AnimatedInView from '@/components/AnimatedInView';
@@ -34,13 +35,10 @@ export const Attendance = () => {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, []);
   
-  const availableClasses = classesWithCounts.map(c => c.name);
-  
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedClass, setSelectedClass] = useState<string>('all');
+  const [selectedClass, setSelectedClass] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-  const [showClassSelection, setShowClassSelection] = useState(selectedClass === 'all');
+  const [showClassSelection, setShowClassSelection] = useState(true);
 
   const handleQuickAttendance = (studentId: string, status: 'present' | 'absent') => {
     updateAttendanceStatus(studentId, status);
@@ -102,15 +100,9 @@ export const Attendance = () => {
   const filteredRecords = attendanceRecords.filter(record => {
     const matchesSearch = record.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          record.studentId.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesClass = selectedClass === 'all' || record.class === selectedClass;
+    const matchesClass = selectedClass === '' || record.class === selectedClass;
     return matchesSearch && matchesClass;
   });
-
-  console.log('Available classes:', availableClasses);
-  console.log('Selected class:', selectedClass);
-  console.log('Total attendance records:', attendanceRecords.length);
-  console.log('Filtered records:', filteredRecords.length);
-  console.log('Sample record classes:', attendanceRecords.slice(0, 5).map(r => r.class));
 
   const canManageAttendance = user?.role === 'admin' || user?.role === 'teacher';
 
@@ -126,12 +118,12 @@ export const Attendance = () => {
       <AnimatedInView>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Attendance Management</h1>
-            <p className="text-muted-foreground">
-              Track and manage student attendance for {format(selectedDate, 'MMMM dd, yyyy')}
+            <h1 className="text-xl sm:text-2xl font-bold">Attendance Management</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Track and manage student attendance
             </p>
           </div>
-          {canManageAttendance && (
+          {canManageAttendance && !showClassSelection && (
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export
@@ -145,46 +137,35 @@ export const Attendance = () => {
         <AnimatedInView>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <BookOpen className="h-5 w-5" />
                 Select Class for Attendance
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                 {classesWithCounts.map((classInfo) => (
                   <Card 
                     key={classInfo.name}
-                    className="hover:shadow-md transition-shadow cursor-pointer border-2 hover:border-primary"
+                    className="hover:shadow-md transition-all duration-200 cursor-pointer border-2 hover:border-primary hover:scale-[1.02]"
                     onClick={() => handleClassSelect(classInfo.name)}
                   >
-                    <CardContent className="p-4">
+                    <CardContent className="p-3 sm:p-4">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <Users className="h-5 w-5 text-primary" />
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                           </div>
                           <div>
-                            <h3 className="font-semibold">{classInfo.name}</h3>
-                            <p className="text-sm text-muted-foreground">{classInfo.count} students</p>
+                            <h3 className="font-semibold text-sm sm:text-base">{classInfo.name}</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{classInfo.count} students</p>
                           </div>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                       </div>
                     </CardContent>
                   </Card>
                 ))}
-              </div>
-              
-              <div className="mt-4 pt-4 border-t">
-                <Button 
-                  variant="outline" 
-                  onClick={() => handleClassSelect('all')}
-                  className="w-full sm:w-auto"
-                >
-                  <Users className="h-4 w-4 mr-2" />
-                  View All Classes
-                </Button>
               </div>
             </CardContent>
           </Card>
@@ -196,13 +177,13 @@ export const Attendance = () => {
         <>
           <AnimatedInView>
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Badge variant="secondary" className="text-base px-3 py-1">
-                      {selectedClass === 'all' ? 'All Classes' : selectedClass}
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <Badge variant="secondary" className="text-sm sm:text-base px-2 sm:px-3 py-1 w-fit">
+                      {selectedClass}
                     </Badge>
-                    <span className="text-muted-foreground">
+                    <span className="text-sm sm:text-base text-muted-foreground">
                       {filteredRecords.length} students
                     </span>
                   </div>
@@ -210,6 +191,7 @@ export const Attendance = () => {
                     variant="outline" 
                     size="sm"
                     onClick={() => setShowClassSelection(true)}
+                    className="w-full sm:w-auto"
                   >
                     Change Class
                   </Button>
@@ -225,18 +207,26 @@ export const Attendance = () => {
         </>
       )}
 
-      {/* Filters */}
+      {/* Search Filter */}
       {!showClassSelection && (
         <AnimatedInView>
-          <AttendanceFilters
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            selectedClass={selectedClass}
-            setSelectedClass={setSelectedClass}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            availableClasses={availableClasses}
-          />
+          <Card>
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search students by name or ID..."
+                      className="pl-10"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </AnimatedInView>
       )}
 
@@ -245,7 +235,6 @@ export const Attendance = () => {
         <AnimatedInView>
           <AttendanceTable
             records={filteredRecords}
-            selectedDate={selectedDate}
             canManageAttendance={canManageAttendance}
             onStatusChange={handleQuickAttendance}
             selectedStudents={selectedStudents}

@@ -11,7 +11,7 @@ import {
   UserCheck,
   UserX
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 interface AttendanceRecord {
   id: string;
@@ -20,14 +20,11 @@ interface AttendanceRecord {
   class: string;
   date: string;
   status: 'present' | 'absent';
-  timeIn?: string;
-  timeOut?: string;
   remarks?: string;
 }
 
 interface AttendanceTableProps {
   records: AttendanceRecord[];
-  selectedDate: Date;
   canManageAttendance: boolean;
   onStatusChange: (studentId: string, status: AttendanceRecord['status']) => void;
   selectedStudents?: string[];
@@ -72,46 +69,48 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <Users className="h-5 w-5" />
             Students Attendance ({records.length})
           </CardTitle>
           
           {canManageAttendance && selectedStudents.length > 0 && onBulkAttendance && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <span className="text-sm text-muted-foreground">
                 {selectedStudents.length} selected
               </span>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-green-600 border-green-600 hover:bg-green-50"
-                onClick={() => onBulkAttendance('present')}
-              >
-                <UserCheck className="h-4 w-4 mr-1" />
-                Mark Present
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-red-600 border-red-600 hover:bg-red-50"
-                onClick={() => onBulkAttendance('absent')}
-              >
-                <UserX className="h-4 w-4 mr-1" />
-                Mark Absent
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-green-600 border-green-600 hover:bg-green-50 text-xs sm:text-sm"
+                  onClick={() => onBulkAttendance('present')}
+                >
+                  <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  Mark Present
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-red-600 border-red-600 hover:bg-red-50 text-xs sm:text-sm"
+                  onClick={() => onBulkAttendance('absent')}
+                >
+                  <UserX className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  Mark Absent
+                </Button>
+              </div>
             </div>
           )}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
+      <CardContent className="p-3 sm:p-6">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 {canManageAttendance && onStudentSelect && (
-                  <TableHead className="w-12">
+                  <TableHead className="w-8 sm:w-12">
                     <Checkbox
                       checked={allSelected}
                       onCheckedChange={onSelectAll}
@@ -120,21 +119,20 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                     />
                   </TableHead>
                 )}
-                <TableHead>Student</TableHead>
-                <TableHead>Class</TableHead>
+                <TableHead className="min-w-[200px]">Student</TableHead>
+                <TableHead className="hidden sm:table-cell">Class</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Time In</TableHead>
-                {canManageAttendance && <TableHead>Quick Actions</TableHead>}
+                {canManageAttendance && <TableHead className="min-w-[180px]">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {records.length === 0 ? (
                 <TableRow>
                   <TableCell 
-                    colSpan={canManageAttendance ? 6 : 5} 
+                    colSpan={canManageAttendance ? 5 : 4} 
                     className="text-center py-8 text-muted-foreground"
                   >
-                    No students found for the selected filters.
+                    No students found for the selected class.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -150,38 +148,23 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                       </TableCell>
                     )}
                     <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage 
-                            src={`/src/assets/photos/${encodeURIComponent(record.studentName)}.JPG`} 
-                            alt={record.studentName}
-                          />
-                          <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
-                            {record.studentName.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{record.studentName}</div>
-                          <div className="text-sm text-muted-foreground">ID: {record.studentId}</div>
-                        </div>
+                      <div>
+                        <div className="font-medium text-sm sm:text-base">{record.studentName}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">ID: {record.studentId}</div>
+                        <div className="text-xs text-muted-foreground sm:hidden">{record.class}</div>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{record.class}</Badge>
+                    <TableCell className="hidden sm:table-cell">
+                      <Badge variant="outline" className="text-xs">{record.class}</Badge>
                     </TableCell>
                     <TableCell>{getStatusBadge(record.status)}</TableCell>
-                    <TableCell>
-                      <span className="text-sm">
-                        {record.timeIn || '-'}
-                      </span>
-                    </TableCell>
                     {canManageAttendance && (
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
                           <Button
                             size="sm"
                             variant={record.status === 'present' ? 'default' : 'outline'}
-                            className="text-green-600 border-green-600 hover:bg-green-50 hover:text-green-700"
+                            className="text-green-600 border-green-600 hover:bg-green-50 hover:text-green-700 text-xs sm:text-sm w-full sm:w-auto"
                             onClick={() => onStatusChange(record.studentId, 'present')}
                           >
                             <CheckCircle className="h-3 w-3 mr-1" />
@@ -190,7 +173,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                           <Button
                             size="sm"
                             variant={record.status === 'absent' ? 'default' : 'outline'}
-                            className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700"
+                            className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 text-xs sm:text-sm w-full sm:w-auto"
                             onClick={() => onStatusChange(record.studentId, 'absent')}
                           >
                             <XCircle className="h-3 w-3 mr-1" />
