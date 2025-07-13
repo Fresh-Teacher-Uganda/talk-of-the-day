@@ -153,11 +153,11 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage 
-                            src={`https://fresh-teacher-uganda.github.io/talk-of-the-day/src/assets/photos/${encodeURIComponent(record.studentName)}.JPG`} 
+                            src={`/src/assets/photos/${encodeURIComponent(record.studentName)}.JPG`} 
                             alt={record.studentName}
                           />
-                          <AvatarFallback>
-                            {record.studentName.split(' ').map(n => n[0]).join('')}
+                          <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
+                            {record.studentName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                           </AvatarFallback>
                         </Avatar>
                         <div>

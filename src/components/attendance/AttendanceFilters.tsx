@@ -56,8 +56,8 @@ export const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
           <div>
             <Label htmlFor="class">Class</Label>
             <Select value={selectedClass} onValueChange={setSelectedClass}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Select a class" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Classes</SelectItem>
