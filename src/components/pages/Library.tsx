@@ -1,13 +1,12 @@
-
-import React, { useState, useMemo, useRef } from 'react';
-import { Search, Download, Eye, BookOpen, FileText, GraduationCap, Package, Clock, ArrowLeft, Grid, List, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
-import HTMLFlipBook from 'react-pageflip';
+import React, { useState, useMemo } from 'react';
+import { Search, Download, Eye, BookOpen, FileText, GraduationCap, Package, Clock, ArrowLeft, Grid, List, ExternalLink, Menu, X, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { AdvancedPagination } from '@/components/ui/pagination-advanced';
 import { ScrollToTop } from '@/components/ui/scroll-to-top';
 import { LibraryDocument, libraryData, classes, subjects, resourceTypes } from '@/data/libraryData';
@@ -62,12 +61,12 @@ export const Library: React.FC = () => {
   const [viewingDocument, setViewingDocument] = useState<LibraryDocument | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
-  // Flipbook ref for navigation
-  const flipBookRef = useRef<any>(null);
-  
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  
+  // UI state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Get filtered resources based on current step and filters
   const filteredResources = useMemo(() => {
@@ -179,49 +178,6 @@ export const Library: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Flipbook navigation handlers
-  const nextPage = () => {
-    flipBookRef.current?.pageFlip().flipNext();
-  };
-
-  const prevPage = () => {
-    flipBookRef.current?.pageFlip().flipPrev();
-  };
-
-  // Generate sample pages for the flipbook preview
-  const generatePreviewPages = (document: LibraryDocument) => {
-    const pages = [];
-    const totalPages = Math.floor(Math.random() * 20) + 4; // Random pages between 4-24
-    
-    for (let i = 0; i < totalPages; i++) {
-      pages.push(
-        <div key={i} className="page bg-white p-6 border border-border/20 shadow-sm">
-          <div className="h-full flex flex-col">
-            <div className="text-xs text-muted-foreground mb-2">Page {i + 1}</div>
-            <h3 className="text-lg font-semibold mb-4 text-foreground">{document.title}</h3>
-            <div className="flex-1 space-y-3">
-              <div className="h-3 bg-muted rounded animate-pulse"></div>
-              <div className="h-3 bg-muted rounded animate-pulse w-4/5"></div>
-              <div className="h-3 bg-muted rounded animate-pulse w-3/4"></div>
-              <div className="h-3 bg-muted rounded animate-pulse"></div>
-              <div className="h-3 bg-muted rounded animate-pulse w-5/6"></div>
-              <div className="h-20 bg-muted/50 rounded mt-4 flex items-center justify-center">
-                <span className="text-xs text-muted-foreground">Content Preview</span>
-              </div>
-              <div className="h-3 bg-muted rounded animate-pulse w-3/5"></div>
-              <div className="h-3 bg-muted rounded animate-pulse"></div>
-              <div className="h-3 bg-muted rounded animate-pulse w-4/5"></div>
-            </div>
-            <div className="text-xs text-muted-foreground mt-4">
-              {document.subject} • {document.class}
-            </div>
-          </div>
-        </div>
-      );
-    }
-    return pages;
-  };
-
   // Render functions
   const renderResourceCard = (resource: LibraryDocument) => (
     <Card key={resource.id} className="group hover:shadow-lg transition-all duration-200 border-border/50 h-full">
@@ -313,231 +269,309 @@ export const Library: React.FC = () => {
     </Card>
   );
 
+  const renderSidebarContent = () => (
+    <div className="p-4 space-y-4">
+      <div>
+        <h3 className="font-semibold mb-2">Search & Filter</h3>
+        <div className="space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search resources..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          {classSubjects.length > 0 && (
+            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+              <SelectTrigger>
+                <SelectValue placeholder="Subject" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Subjects</SelectItem>
+                {classSubjects.map((subject) => (
+                  <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      </div>
+
+      {currentStep === 'resource-list' && (
+        <div>
+          <h3 className="font-semibold mb-2">View Options</h3>
+          <div className="flex gap-2">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className="flex-1"
+            >
+              <Grid className="h-4 w-4 mr-1" />
+              Grid
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="flex-1"
+            >
+              <List className="h-4 w-4 mr-1" />
+              List
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Collapsible Sidebar */}
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetContent side="left" className="w-80 p-0">
+          <div className="p-4 border-b">
+            <h2 className="font-semibold">Library Filters</h2>
+          </div>
+          {renderSidebarContent()}
+        </SheetContent>
+      </Sheet>
+
       {/* Main Content */}
-      <div className="w-full">
-        {currentStep === 'bookshelf' && (
-          <div className="min-h-screen p-4">
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold mb-4">School Library</h1>
-              <p className="text-lg text-muted-foreground">Select a class to browse educational resources</p>
-            </div>
-            
-            {/* Bookshelf Display */}
-            <div className="container mx-auto max-w-6xl">
-              <style>{`
-                .bookshelf .thumb {
-                  display: inline-block;
-                  cursor: pointer;
-                  margin: 0px 0.5%;
-                  width: 15% !important;
-                  box-shadow: 0px 1px 3px rgba(0, 0, 0, .3);
-                  max-width: 120px;
-                  transition: transform 0.2s ease;
-                }
-
-                .bookshelf .thumb:hover {
-                  transform: translateY(-5px);
-                }
-
-                .bookshelf .thumb img {
-                  width: 100%;
-                  display: block;
-                  vertical-align: top;
-                }
-
-                .bookshelf .shelf-img {
-                  z-index: 0;
-                  height: auto;
-                  max-width: 100%;
-                  vertical-align: top;
-                  margin-top: -12px;
-                }
-
-                .bookshelf .covers {
-                  width: 100%;
-                  height: auto;
-                  z-index: 99;
-                  text-align: center;
-                }
-
-                .bookshelf {
-                  text-align: center;
-                  padding: 20px 0;
-                }
-
-                @media (max-width: 768px) {
-                  .bookshelf .thumb {
-                    width: 30% !important;
-                    max-width: 140px;
-                    margin: 0px 1.5%;
-                  }
-                  
-                  .bookshelf .shelf-img {
-                    margin-top: -8px;
-                  }
-                }
-              `}</style>
-
-              <div className="space-y-8">
-                {/* First Shelf - Nursery Classes */}
-                <div className="bookshelf">
-                  <div className="covers">
-                    {['Baby Class', 'Middle Class', 'Top Class'].map((classKey) => (
-                      <div key={classKey} className="thumb book-1">
-                        <button 
-                          onClick={() => handleClassSelect(classKey)}
-                          className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
-                        >
-                          <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
-                </div>
-
-                {/* Second Shelf - Lower Primary */}
-                <div className="bookshelf">
-                  <div className="covers">
-                    {['Primary One', 'Primary Two', 'Primary Three'].map((classKey) => (
-                      <div key={classKey} className="thumb book-1">
-                        <button 
-                          onClick={() => handleClassSelect(classKey)}
-                          className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
-                        >
-                          <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
-                </div>
-
-                {/* Third Shelf - Upper Primary Part 1 */}
-                <div className="bookshelf">
-                  <div className="covers">
-                    {['Primary Four', 'Primary Five', 'Primary Six'].map((classKey) => (
-                      <div key={classKey} className="thumb book-1">
-                        <button 
-                          onClick={() => handleClassSelect(classKey)}
-                          className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
-                        >
-                          <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
-                </div>
-
-                {/* Fourth Shelf - Upper Primary Part 2 */}
-                <div className="bookshelf">
-                  <div className="covers">
-                    <div className="thumb book-1">
-                      <button 
-                        onClick={() => handleClassSelect('Primary Seven')}
-                        className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
-                      >
-                        <img src={classImages['Primary Seven']} alt="Primary Seven" />
-                      </button>
-                    </div>
-                  </div>
-                  <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
-                </div>
-              </div>
-            </div>
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block w-80 border-r bg-card">
+          <div className="p-4 border-b">
+            <h2 className="font-semibold">Library Filters</h2>
           </div>
-        )}
+          {renderSidebarContent()}
+        </div>
 
-        {currentStep === 'class-overview' && (
-          <div className="p-4 lg:p-6">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" onClick={handleBackToBookshelf}>
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Library
+        {/* Main Content Area */}
+        <div className="flex-1 min-w-0">
+          {currentStep === 'bookshelf' && (
+            <div className="min-h-screen p-4">
+              {/* Mobile Sidebar Toggle */}
+              <div className="lg:hidden mb-4">
+                <Button variant="outline" onClick={() => setSidebarOpen(true)}>
+                  <Menu className="h-4 w-4 mr-2" />
+                  Filters
                 </Button>
-                <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold">{selectedClass}</h1>
-                  <p className="text-muted-foreground">Choose a resource type to browse</p>
-                </div>
               </div>
-            </div>
 
-            {/* Resource Type Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {resourceTypes.map((type) => (
-                <Card 
-                  key={type.id} 
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
-                  onClick={() => handleResourceTypeSelect(type.id)}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                        {getResourceTypeIcon(type.id)}
-                      </div>
-                      <h3 className="font-semibold text-sm">{type.label}</h3>
-                      <Badge variant="secondary" className="text-xs">
-                        {resourceTypeCounts[type.id] || 0} items
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {currentStep === 'resource-list' && (
-          <div className="p-4 lg:p-6">
-            {/* Header with inline filters */}
-            <div className="flex flex-col gap-4 mb-6">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" onClick={handleBackToClassOverview}>
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to {selectedClass}
-                </Button>
-                <div>
-                  <h1 className="text-xl lg:text-2xl font-bold">
-                    {resourceTypes.find(rt => rt.id === selectedResourceType)?.label}
-                  </h1>
-                  <p className="text-muted-foreground text-sm">
-                    {selectedClass} • {filteredResources.length} resources
-                  </p>
-                </div>
+              <div className="text-center mb-8">
+                <h1 className="text-4xl font-bold mb-4">School Library</h1>
+                <p className="text-lg text-muted-foreground">Select a class to browse educational resources</p>
               </div>
               
-              {/* Inline Search and Filters */}
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <div className="relative flex-1 min-w-64">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Search resources..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+              {/* Bookshelf Display */}
+              <div className="container mx-auto max-w-6xl">
+                <style>{`
+                  .bookshelf .thumb {
+                    display: inline-block;
+                    cursor: pointer;
+                    margin: 0px 0.5%;
+                    width: 15% !important;
+                    box-shadow: 0px 1px 3px rgba(0, 0, 0, .3);
+                    max-width: 120px;
+                    transition: transform 0.2s ease;
+                  }
+
+                  .bookshelf .thumb:hover {
+                    transform: translateY(-5px);
+                  }
+
+                  .bookshelf .thumb img {
+                    width: 100%;
+                    display: block;
+                    vertical-align: top;
+                  }
+
+                  .bookshelf .shelf-img {
+                    z-index: 0;
+                    height: auto;
+                    max-width: 100%;
+                    vertical-align: top;
+                    margin-top: -12px;
+                  }
+
+                  .bookshelf .covers {
+                    width: 100%;
+                    height: auto;
+                    z-index: 99;
+                    text-align: center;
+                  }
+
+                  .bookshelf {
+                    text-align: center;
+                    padding: 20px 0;
+                  }
+
+                  @media (max-width: 768px) {
+                    .bookshelf .thumb {
+                      width: 30% !important;
+                      max-width: 140px;
+                      margin: 0px 1.5%;
+                    }
+                    
+                    .bookshelf .shelf-img {
+                      margin-top: -8px;
+                    }
+                  }
+                `}</style>
+
+                <div className="space-y-8">
+                  {/* First Shelf - Nursery Classes */}
+                  <div className="bookshelf">
+                    <div className="covers">
+                      {['Baby Class', 'Middle Class', 'Top Class'].map((classKey) => (
+                        <div key={classKey} className="thumb book-1">
+                          <button 
+                            onClick={() => handleClassSelect(classKey)}
+                            className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                          >
+                            <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                  </div>
+
+                  {/* Second Shelf - Lower Primary */}
+                  <div className="bookshelf">
+                    <div className="covers">
+                      {['Primary One', 'Primary Two', 'Primary Three'].map((classKey) => (
+                        <div key={classKey} className="thumb book-1">
+                          <button 
+                            onClick={() => handleClassSelect(classKey)}
+                            className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                          >
+                            <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                  </div>
+
+                  {/* Third Shelf - Upper Primary Part 1 */}
+                  <div className="bookshelf">
+                    <div className="covers">
+                      {['Primary Four', 'Primary Five', 'Primary Six'].map((classKey) => (
+                        <div key={classKey} className="thumb book-1">
+                          <button 
+                            onClick={() => handleClassSelect(classKey)}
+                            className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                          >
+                            <img src={classImages[classKey as keyof typeof classImages]} alt={classKey} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                  </div>
+
+                  {/* Fourth Shelf - Upper Primary Part 2 */}
+                  <div className="bookshelf">
+                    <div className="covers">
+                      <div className="thumb book-1">
+                        <button 
+                          onClick={() => handleClassSelect('Primary Seven')}
+                          className="focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                        >
+                          <img src={classImages['Primary Seven']} alt="Primary Seven" />
+                        </button>
+                      </div>
+                    </div>
+                    <img className="shelf-img" src="https://fresh-teacher.github.io/images/shelf_wood.png" alt="Wooden shelf" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 'class-overview' && (
+            <div className="p-4 lg:p-6">
+              {/* Mobile Sidebar Toggle */}
+              <div className="lg:hidden mb-4">
+                <Button variant="outline" onClick={() => setSidebarOpen(true)}>
+                  <Menu className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+              </div>
+
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <Button variant="ghost" onClick={handleBackToBookshelf}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Library
+                  </Button>
+                  <div>
+                    <h1 className="text-2xl lg:text-3xl font-bold">{selectedClass}</h1>
+                    <p className="text-muted-foreground">Choose a resource type to browse</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Resource Type Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {resourceTypes.map((type) => (
+                  <Card 
+                    key={type.id} 
+                    className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                    onClick={() => handleResourceTypeSelect(type.id)}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                          {getResourceTypeIcon(type.id)}
+                        </div>
+                        <h3 className="font-semibold text-sm">{type.label}</h3>
+                        <Badge variant="secondary" className="text-xs">
+                          {resourceTypeCounts[type.id] || 0} items
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 'resource-list' && (
+            <div className="p-4 lg:p-6">
+              {/* Mobile Sidebar Toggle */}
+              <div className="lg:hidden mb-4">
+                <Button variant="outline" onClick={() => setSidebarOpen(true)}>
+                  <Menu className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+              </div>
+
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-4">
+                  <Button variant="ghost" onClick={handleBackToClassOverview}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to {selectedClass}
+                  </Button>
+                  <div>
+                    <h1 className="text-xl lg:text-2xl font-bold">
+                      {resourceTypes.find(rt => rt.id === selectedResourceType)?.label}
+                    </h1>
+                    <p className="text-muted-foreground text-sm">
+                      {selectedClass} • {filteredResources.length} resources
+                    </p>
+                  </div>
                 </div>
                 
-                {classSubjects.length > 0 && (
-                  <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Subject" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Subjects</SelectItem>
-                      {classSubjects.map((subject) => (
-                        <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-
-                <div className="flex items-center gap-2">
+                {/* Desktop View Toggle */}
+                <div className="hidden lg:flex items-center gap-2">
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'outline'}
                     size="sm"
@@ -554,120 +588,64 @@ export const Library: React.FC = () => {
                   </Button>
                 </div>
               </div>
+
+              {/* Resources Grid/List */}
+              {paginatedResources.length > 0 ? (
+                <div className={
+                  viewMode === 'grid' 
+                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6"
+                    : "space-y-3 mb-6"
+                }>
+                  {paginatedResources.map(resource => 
+                    viewMode === 'grid' ? renderResourceCard(resource) : renderResourceList(resource)
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-medium mb-2">No resources found</h3>
+                  <p className="text-muted-foreground">Try adjusting your search or filters</p>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <AdvancedPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredResources.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={handlePageChange}
+                  onItemsPerPageChange={handleItemsPerPageChange}
+                  onJumpToPage={handleJumpToPage}
+                />
+              )}
             </div>
-
-            {/* Resources Grid/List */}
-            {paginatedResources.length > 0 ? (
-              <div className={
-                viewMode === 'grid' 
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6"
-                  : "space-y-3 mb-6"
-              }>
-                {paginatedResources.map(resource => 
-                  viewMode === 'grid' ? renderResourceCard(resource) : renderResourceList(resource)
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">No resources found</h3>
-                <p className="text-muted-foreground">Try adjusting your search or filters</p>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <AdvancedPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalItems={filteredResources.length}
-                itemsPerPage={itemsPerPage}
-                onPageChange={handlePageChange}
-                onItemsPerPageChange={handleItemsPerPageChange}
-                onJumpToPage={handleJumpToPage}
-              />
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Preview Dialog with Flipbook */}
+      {/* Preview Dialog */}
       <Dialog open={!!viewingDocument} onOpenChange={() => setViewingDocument(null)}>
-        <DialogContent className="max-w-5xl h-[85vh] p-4">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {viewingDocument && getResourceTypeIcon(viewingDocument.type)}
-                {viewingDocument?.title}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={prevPage}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={nextPage}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => viewingDocument && handleDownload(viewingDocument)}
-                >
-                  <Download className="h-4 w-4 mr-1" />
-                  Download
-                </Button>
-              </div>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {viewingDocument && getResourceTypeIcon(viewingDocument.type)}
+              {viewingDocument?.title}
             </DialogTitle>
           </DialogHeader>
-          
-          <div className="flex-1 flex items-center justify-center bg-muted/30 rounded-lg overflow-hidden">
-            {viewingDocument && (
-              <div className="flipbook-container">
-                <HTMLFlipBook
-                  ref={flipBookRef}
-                  width={300}
-                  height={400}
-                  size="stretch"
-                  minWidth={250}
-                  maxWidth={350}
-                  minHeight={350}
-                  maxHeight={450}
-                  maxShadowOpacity={0.3}
-                  showCover={true}
-                  mobileScrollSupport={true}
-                  className="flipbook"
-                  style={{}}
-                  startPage={0}
-                  drawShadow={true}
-                  flippingTime={1000}
-                  usePortrait={true}
-                  startZIndex={0}
-                  autoSize={true}
-                  clickEventForward={true}
-                  useMouseEvents={true}
-                  swipeDistance={30}
-                  showPageCorners={true}
-                  disableFlipByClick={false}
-                >
-                  {generatePreviewPages(viewingDocument)}
-                </HTMLFlipBook>
-              </div>
-            )}
-          </div>
-          
-          <div className="flex-shrink-0 text-center mt-2">
-            <p className="text-xs text-muted-foreground">
-              This is a preview simulation. Click and drag page corners or use the navigation buttons to flip pages.
-            </p>
+          <div className="flex-1 bg-muted rounded-lg p-8 flex items-center justify-center">
+            <div className="text-center">
+              <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium mb-2">Document Preview</h3>
+              <p className="text-muted-foreground mb-4">
+                Preview functionality would be implemented here
+              </p>
+              <Button onClick={() => viewingDocument && handleDownload(viewingDocument)}>
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Open Document
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

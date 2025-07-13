@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Student } from '@/hooks/useStudents';
-import { Phone, Mail, MapPin, User, GraduationCap, Calendar } from 'lucide-react';
+import { Phone, Mail, MapPin, User, GraduationCap, Calendar, CreditCard, Hash } from 'lucide-react';
 
 interface StudentDetailsDialogProps {
   open: boolean;
@@ -43,28 +43,9 @@ export const StudentDetailsDialog: React.FC<StudentDetailsDialogProps> = ({
         <div className="space-y-6">
           {/* Header */}
           <div className="text-center border-b pb-4">
-            {student.photo ? (
-              <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-3 border-2 border-gray-200">
-                <img 
-                  src={student.photo} 
-                  alt={student.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
-                  }}
-                />
-                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center" style={{ display: 'none' }}>
-                  <User className="h-8 w-8 text-blue-600" />
-                </div>
-              </div>
-            ) : (
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <User className="h-8 w-8 text-blue-600" />
-              </div>
-            )}
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <User className="h-8 w-8 text-blue-600" />
+            </div>
             <h3 className="text-xl font-semibold">{student.name}</h3>
             <p className="text-gray-600">Student ID: {student.id}</p>
           </div>
@@ -86,6 +67,26 @@ export const StudentDetailsDialog: React.FC<StudentDetailsDialogProps> = ({
                 <p className="font-medium">{student.age} years old</p>
               </div>
             </div>
+
+            {student.dateOfBirth && (
+              <div className="flex items-center space-x-3">
+                <Calendar className="h-5 w-5 text-gray-400" />
+                <div>
+                  <p className="text-sm text-gray-600">Date of Birth</p>
+                  <p className="font-medium">{student.dateOfBirth}</p>
+                </div>
+              </div>
+            )}
+
+            {student.schoolPayCode && (
+              <div className="flex items-center space-x-3">
+                <CreditCard className="h-5 w-5 text-gray-400" />
+                <div>
+                  <p className="text-sm text-gray-600">School Pay Code</p>
+                  <p className="font-medium">{student.schoolPayCode}</p>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center space-x-3">
               <User className="h-5 w-5 text-gray-400" />
@@ -126,12 +127,6 @@ export const StudentDetailsDialog: React.FC<StudentDetailsDialogProps> = ({
             <div className="flex items-center space-x-3">
               <div className="h-5 w-5 flex items-center justify-center">
                 <div className="h-3 w-3 bg-gray-400 rounded-full"></div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Fees Status</p>
-                <Badge className={getFeesStatusColor(student.fees)}>
-                  {student.fees}
-                </Badge>
               </div>
             </div>
           </div>

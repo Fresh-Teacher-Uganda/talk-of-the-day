@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Student } from '@/hooks/useStudents';
-import { User } from 'lucide-react';
 
 interface StudentsTableProps {
   students: Student[];
@@ -46,18 +45,6 @@ export const StudentsTable: React.FC<StudentsTableProps> = ({
     student: Student | null;
   }>({ open: false, action: 'archive', student: null });
 
-  const getFeesStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'paid':
-        return 'bg-green-100 text-green-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'overdue':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   const getAccountStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -140,7 +127,6 @@ export const StudentsTable: React.FC<StudentsTableProps> = ({
               <TableHead>Age</TableHead>
               <TableHead>Parent/Guardian</TableHead>
               <TableHead>Contact</TableHead>
-              <TableHead>Fees Status</TableHead>
               <TableHead>Account Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -149,42 +135,11 @@ export const StudentsTable: React.FC<StudentsTableProps> = ({
             {students.map((student) => (
               <TableRow key={student.id}>
                 <TableCell className="font-medium">{student.id}</TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-3">
-                    {student.photo ? (
-                      <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-200">
-                        <img 
-                          src={student.photo} 
-                          alt={student.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const fallback = target.nextElementSibling as HTMLElement;
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                        <div className="absolute inset-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center" style={{ display: 'none' }}>
-                          <User className="h-5 w-5 text-blue-600" />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-blue-600" />
-                      </div>
-                    )}
-                    <span className="font-medium">{student.name}</span>
-                  </div>
-                </TableCell>
+                <TableCell>{student.name}</TableCell>
                 <TableCell>{student.class}</TableCell>
                 <TableCell>{student.age}</TableCell>
                 <TableCell>{student.parent}</TableCell>
                 <TableCell>{student.phone}</TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className={getFeesStatusColor(student.fees)}>
-                    {student.fees}
-                  </Badge>
-                </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className={getAccountStatusColor(student.status)}>
                     {student.status.charAt(0).toUpperCase() + student.status.slice(1)}

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
-import { generateStudentsFromDatabase } from '@/data/pupilsData';
+import { localStudentDatabase } from '@/data/studentdata';
 
 export interface Student {
   id: string;
@@ -11,11 +11,11 @@ export interface Student {
   age: number;
   parent: string;
   phone: string;
-  fees: 'Paid' | 'Pending' | 'Overdue';
   email?: string;
   address?: string;
   status: 'active' | 'inactive' | 'suspended' | 'archived' | 'expelled';
-  photo?: string;
+  dateOfBirth?: string;
+  schoolPayCode?: string;
 }
 
 export const useStudents = () => {
@@ -24,7 +24,7 @@ export const useStudents = () => {
   const [allStudents, setAllStudents] = useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterClass, setFilterClass] = useState<string>('all');
   const [loading, setLoading] = useState(false);
 
   // Load initial data
@@ -60,30 +60,42 @@ export const useStudents = () => {
       );
     }
 
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(student => student.fees === filterStatus);
+    if (filterClass !== 'all') {
+      filtered = filtered.filter(student => student.class === filterClass);
     }
 
     setFilteredStudents(filtered);
-  }, [allStudents, searchTerm, filterStatus, user, profileData]);
+  }, [allStudents, searchTerm, filterClass, user, profileData]);
 
   const loadStudents = () => {
     setLoading(true);
-    // Simulate API call
+    // Load real student data from studentdata.ts
     setTimeout(() => {
-      const studentsWithPhotos = generateStudentsFromDatabase();
-      setAllStudents(studentsWithPhotos);
+      const realStudents: Student[] = localStudentDatabase.users.map(student => ({
+        id: student.id,
+        name: student.name,
+        class: student.class,
+        age: Math.floor(Math.random() * 5) + 6, // Random age between 6-10 for primary school
+        parent: 'Parent/Guardian',
+        phone: `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
+        email: student.email,
+        address: 'Kampala, Uganda',
+        status: 'active' as const,
+        dateOfBirth: student.dateOfBirth || '',
+        schoolPayCode: student.schoolPayCode || ''
+      }));
+      setAllStudents(realStudents);
       setLoading(false);
     }, 1000);
   };
 
   const getStats = () => {
     const total = filteredStudents.length;
-    const paid = filteredStudents.filter(s => s.fees === 'Paid').length;
-    const pending = filteredStudents.filter(s => s.fees === 'Pending').length;
-    const overdue = filteredStudents.filter(s => s.fees === 'Overdue').length;
+    const activeClasses = [...new Set(filteredStudents.map(s => s.class))].length;
+    const activeStudents = filteredStudents.filter(s => s.status === 'active').length;
+    const inactiveStudents = filteredStudents.filter(s => s.status !== 'active').length;
     
-    return { total, paid, pending, overdue };
+    return { total, activeClasses, activeStudents, inactiveStudents };
   };
 
   const addStudent = (student: Omit<Student, 'id'>) => {
@@ -115,14 +127,20 @@ export const useStudents = () => {
     setAllStudents(prev => prev.filter(student => student.id !== id));
   };
 
+  // Get available classes
+  const getAvailableClasses = () => {
+    return [...new Set(allStudents.map(student => student.class))].sort();
+  };
+
   return {
     students: filteredStudents,
     allStudents,
     loading,
     searchTerm,
     setSearchTerm,
-    filterStatus,
-    setFilterStatus,
+    filterClass,
+    setFilterClass,
+    availableClasses: getAvailableClasses(),
     stats: getStats(),
     addStudent,
     updateStudent,

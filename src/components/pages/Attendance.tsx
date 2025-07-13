@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStudents } from '@/hooks/useStudents';
 import { useToast } from '@/hooks/use-toast';
 import AnimatedInView from '@/components/AnimatedInView';
 import { exportAttendanceToCSV } from '@/utils/attendanceExport';
@@ -11,17 +12,25 @@ import { AttendanceFilters } from '@/components/attendance/AttendanceFilters';
 import { AttendanceTable } from '@/components/attendance/AttendanceTable';
 import { useAttendanceData } from '@/hooks/useAttendanceData';
 import { format } from 'date-fns';
+import { localStudentDatabase } from '@/data/studentdata';
 
 export const Attendance = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { attendanceRecords, updateAttendanceStatus } = useAttendanceData();
+  const { attendanceRecords, updateAttendanceStatus, bulkUpdateAttendance } = useAttendanceData();
+  
+  // Get available classes from student database
+  const availableClasses = [...new Set(localStudentDatabase.users
+    .filter(user => user.role === 'pupil')
+    .map(student => student.class)
+  )].sort();
   
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
 
-  const handleQuickAttendance = (studentId: string, status: 'present' | 'absent' | 'late' | 'excused') => {
+  const handleQuickAttendance = (studentId: string, status: 'present' | 'absent') => {
     updateAttendanceStatus(studentId, status);
     
     const student = attendanceRecords.find(r => r.studentId === studentId);
@@ -29,6 +38,33 @@ export const Attendance = () => {
       title: 'Attendance Updated',
       description: `${student?.studentName} marked as ${status}`,
     });
+  };
+
+  const handleBulkAttendance = (status: 'present' | 'absent') => {
+    if (selectedStudents.length === 0) {
+      toast({
+        title: 'No Students Selected',
+        description: 'Please select students to update attendance.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    bulkUpdateAttendance(selectedStudents, status);
+    setSelectedStudents([]);
+    
+    toast({
+      title: 'Bulk Attendance Updated',
+      description: `${selectedStudents.length} students marked as ${status}`,
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedStudents.length === filteredRecords.length) {
+      setSelectedStudents([]);
+    } else {
+      setSelectedStudents(filteredRecords.map(record => record.studentId));
+    }
   };
 
   const handleExport = () => {
@@ -57,6 +93,12 @@ export const Attendance = () => {
     const matchesClass = selectedClass === 'all' || record.class === selectedClass;
     return matchesSearch && matchesClass;
   });
+
+  console.log('Available classes:', availableClasses);
+  console.log('Selected class:', selectedClass);
+  console.log('Total attendance records:', attendanceRecords.length);
+  console.log('Filtered records:', filteredRecords.length);
+  console.log('Sample record classes:', attendanceRecords.slice(0, 5).map(r => r.class));
 
   const canManageAttendance = user?.role === 'admin' || user?.role === 'teacher';
 
@@ -94,6 +136,7 @@ export const Attendance = () => {
           setSelectedClass={setSelectedClass}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          availableClasses={availableClasses}
         />
       </AnimatedInView>
 
@@ -104,6 +147,16 @@ export const Attendance = () => {
           selectedDate={selectedDate}
           canManageAttendance={canManageAttendance}
           onStatusChange={handleQuickAttendance}
+          selectedStudents={selectedStudents}
+          onStudentSelect={(studentId) => {
+            setSelectedStudents(prev => 
+              prev.includes(studentId) 
+                ? prev.filter(id => id !== studentId)
+                : [...prev, studentId]
+            );
+          }}
+          onSelectAll={handleSelectAll}
+          onBulkAttendance={handleBulkAttendance}
         />
       </AnimatedInView>
     </div>
