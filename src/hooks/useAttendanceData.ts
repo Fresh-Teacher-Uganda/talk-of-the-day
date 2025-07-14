@@ -46,21 +46,27 @@ const defaultRecords: AttendanceRecord[] = generateDefaultRecords();
 
 export const useAttendanceData = () => {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setAttendanceRecords(parsedData);
-      } catch (error) {
-        console.error('Error loading attendance data:', error);
+    setLoading(true);
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          setAttendanceRecords(parsedData);
+        } catch (error) {
+          console.error('Error loading attendance data:', error);
+          setAttendanceRecords(defaultRecords);
+        }
+      } else {
         setAttendanceRecords(defaultRecords);
       }
-    } else {
-      setAttendanceRecords(defaultRecords);
-    }
+      setLoading(false);
+    }, 1000);
   }, []);
 
   // Save data to localStorage whenever records change
@@ -114,6 +120,7 @@ export const useAttendanceData = () => {
 
   return {
     attendanceRecords,
+    loading,
     updateAttendanceStatus,
     bulkUpdateAttendance
   };

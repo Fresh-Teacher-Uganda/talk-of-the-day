@@ -13,13 +13,15 @@ import { AttendanceStats } from '@/components/attendance/AttendanceStats';
 import { AttendanceFilters } from '@/components/attendance/AttendanceFilters';
 import { AttendanceTable } from '@/components/attendance/AttendanceTable';
 import { useAttendanceData } from '@/hooks/useAttendanceData';
+import { LoadingClassGrid, LoadingStatsCards, LoadingTable } from '@/components/ui/loading-skeleton';
+import { LoadingProgress } from '@/components/ui/loading-progress';
 import { format } from 'date-fns';
 import { localStudentDatabase } from '@/data/studentdata';
 
 export const Attendance = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { attendanceRecords, updateAttendanceStatus, bulkUpdateAttendance } = useAttendanceData();
+  const { attendanceRecords, loading, updateAttendanceStatus, bulkUpdateAttendance } = useAttendanceData();
   
   // Get available classes from student database with student counts
   const classesWithCounts = useMemo(() => {
@@ -135,40 +137,44 @@ export const Attendance = () => {
       {/* Class Selection Overview */}
       {showClassSelection && (
         <AnimatedInView>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                <BookOpen className="h-5 w-5" />
-                Select Class for Attendance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-                {classesWithCounts.map((classInfo) => (
-                  <Card 
-                    key={classInfo.name}
-                    className="hover:shadow-md transition-all duration-200 cursor-pointer border-2 hover:border-primary hover:scale-[1.02]"
-                    onClick={() => handleClassSelect(classInfo.name)}
-                  >
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          {loading ? (
+            <LoadingClassGrid />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  <BookOpen className="h-5 w-5" />
+                  Select Class for Attendance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                  {classesWithCounts.map((classInfo) => (
+                    <Card 
+                      key={classInfo.name}
+                      className="hover:shadow-md transition-all duration-200 cursor-pointer border-2 hover:border-primary hover:scale-[1.02]"
+                      onClick={() => handleClassSelect(classInfo.name)}
+                    >
+                      <CardContent className="p-3 sm:p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-sm sm:text-base">{classInfo.name}</h3>
+                              <p className="text-xs sm:text-sm text-muted-foreground">{classInfo.count} students</p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-sm sm:text-base">{classInfo.name}</h3>
-                            <p className="text-xs sm:text-sm text-muted-foreground">{classInfo.count} students</p>
-                          </div>
+                          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                         </div>
-                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </AnimatedInView>
       )}
 
@@ -202,7 +208,11 @@ export const Attendance = () => {
 
           {/* Stats Cards */}
           <AnimatedInView>
-            <AttendanceStats records={filteredRecords} />
+            {loading ? (
+              <LoadingStatsCards />
+            ) : (
+              <AttendanceStats records={filteredRecords} />
+            )}
           </AnimatedInView>
         </>
       )}
@@ -233,21 +243,25 @@ export const Attendance = () => {
       {/* Attendance Table */}
       {!showClassSelection && (
         <AnimatedInView>
-          <AttendanceTable
-            records={filteredRecords}
-            canManageAttendance={canManageAttendance}
-            onStatusChange={handleQuickAttendance}
-            selectedStudents={selectedStudents}
-            onStudentSelect={(studentId) => {
-              setSelectedStudents(prev => 
-                prev.includes(studentId) 
-                  ? prev.filter(id => id !== studentId)
-                  : [...prev, studentId]
-              );
-            }}
-            onSelectAll={handleSelectAll}
-            onBulkAttendance={handleBulkAttendance}
-          />
+          {loading ? (
+            <LoadingTable />
+          ) : (
+            <AttendanceTable
+              records={filteredRecords}
+              canManageAttendance={canManageAttendance}
+              onStatusChange={handleQuickAttendance}
+              selectedStudents={selectedStudents}
+              onStudentSelect={(studentId) => {
+                setSelectedStudents(prev => 
+                  prev.includes(studentId) 
+                    ? prev.filter(id => id !== studentId)
+                    : [...prev, studentId]
+                );
+              }}
+              onSelectAll={handleSelectAll}
+              onBulkAttendance={handleBulkAttendance}
+            />
+          )}
         </AnimatedInView>
       )}
     </div>

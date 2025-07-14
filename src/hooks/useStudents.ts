@@ -69,7 +69,7 @@ export const useStudents = () => {
 
   const loadStudents = () => {
     setLoading(true);
-    // Load real student data from studentdata.ts
+    // Load real student data from studentdata.ts with progressive loading simulation
     setTimeout(() => {
       const realStudents: Student[] = localStudentDatabase.users.map(student => ({
         id: student.id,
@@ -86,7 +86,7 @@ export const useStudents = () => {
       }));
       setAllStudents(realStudents);
       setLoading(false);
-    }, 1000);
+    }, 1500); // Slightly longer for better loading UX demonstration
   };
 
   const getStats = () => {
