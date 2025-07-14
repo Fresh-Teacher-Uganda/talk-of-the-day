@@ -1,13 +1,16 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, BookOpen, Clock, Award } from 'lucide-react';
 import { useStudents } from '@/hooks/useStudents';
 import { useAttendanceData } from '@/hooks/useAttendanceData';
+import { ColorfulSpinner } from '@/components/ui/colorful-spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const Analytics = () => {
   const { students, stats } = useStudents();
-  const { attendanceRecords } = useAttendanceData();
+  const { attendanceRecords, loading: attendanceLoading } = useAttendanceData();
+  const [calculationsLoading, setCalculationsLoading] = useState(true);
 
   const performanceData = [
     { subject: 'Mathematics', average: 78, improvement: '+5%' },
@@ -19,6 +22,8 @@ export const Analytics = () => {
 
   // Generate class performance data from real student data
   const classPerformance = React.useMemo(() => {
+    if (attendanceLoading || students.length === 0) return [];
+    
     const classMap = new Map();
     
     students.forEach(student => {
@@ -50,7 +55,37 @@ export const Analytics = () => {
         attendance: `${attendanceRate}%`
       };
     }).sort((a, b) => a.class.localeCompare(b.class));
-  }, [students, attendanceRecords]);
+  }, [students, attendanceRecords, attendanceLoading]);
+
+  useEffect(() => {
+    // Simulate calculation time for analytics
+    if (!attendanceLoading && students.length > 0) {
+      setTimeout(() => {
+        setCalculationsLoading(false);
+      }, 800);
+    }
+  }, [attendanceLoading, students]);
+
+  const isLoading = attendanceLoading || calculationsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">School Analytics</h1>
+          <div className="flex items-center space-x-2 text-gray-600">
+            <BarChart3 className="h-5 w-5" />
+            <span>Term 2, 2024</span>
+          </div>
+        </div>
+        <ColorfulSpinner 
+          type="grades" 
+          message="Calculating school analytics and performance metrics..." 
+          size="lg"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -15,6 +15,7 @@ import { AttendanceTable } from '@/components/attendance/AttendanceTable';
 import { useAttendanceData } from '@/hooks/useAttendanceData';
 import { LoadingClassGrid, LoadingStatsCards, LoadingTable } from '@/components/ui/loading-skeleton';
 import { LoadingProgress } from '@/components/ui/loading-progress';
+import { ColorfulSpinner } from '@/components/ui/colorful-spinner';
 import { format } from 'date-fns';
 import { localStudentDatabase } from '@/data/studentdata';
 
@@ -41,6 +42,7 @@ export const Attendance = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [showClassSelection, setShowClassSelection] = useState(true);
+  const [loadingStudents, setLoadingStudents] = useState(false);
 
   const handleQuickAttendance = (studentId: string, status: 'present' | 'absent') => {
     updateAttendanceStatus(studentId, status);
@@ -109,9 +111,14 @@ export const Attendance = () => {
   const canManageAttendance = user?.role === 'admin' || user?.role === 'teacher';
 
   const handleClassSelect = (className: string) => {
-    setSelectedClass(className);
-    setShowClassSelection(false);
-    setSelectedStudents([]);
+    setLoadingStudents(true);
+    // Simulate loading time for student filtering
+    setTimeout(() => {
+      setSelectedClass(className);
+      setShowClassSelection(false);
+      setSelectedStudents([]);
+      setLoadingStudents(false);
+    }, 800);
   };
 
   return (
@@ -178,8 +185,19 @@ export const Attendance = () => {
         </AnimatedInView>
       )}
 
+      {/* Loading Students Overlay */}
+      {loadingStudents && (
+        <AnimatedInView>
+          <ColorfulSpinner 
+            type="students" 
+            message="Loading student attendance records..." 
+            size="lg"
+          />
+        </AnimatedInView>
+      )}
+
       {/* Current Selection & Stats */}
-      {!showClassSelection && (
+      {!showClassSelection && !loadingStudents && (
         <>
           <AnimatedInView>
             <Card>
@@ -218,7 +236,7 @@ export const Attendance = () => {
       )}
 
       {/* Search Filter */}
-      {!showClassSelection && (
+      {!showClassSelection && !loadingStudents && (
         <AnimatedInView>
           <Card>
             <CardContent className="p-3 sm:p-4">
@@ -241,7 +259,7 @@ export const Attendance = () => {
       )}
 
       {/* Attendance Table */}
-      {!showClassSelection && (
+      {!showClassSelection && !loadingStudents && (
         <AnimatedInView>
           {loading ? (
             <LoadingTable />
