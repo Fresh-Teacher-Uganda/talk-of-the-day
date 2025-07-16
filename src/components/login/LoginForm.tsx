@@ -8,7 +8,7 @@ import { EmailInput } from '@/components/ui/email-input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { LogIn } from 'lucide-react';
-import { localDatabase } from '@/data/localDatabase';
+import { userDatabase } from '@/data/userDatabase';
 
 interface LoginFormProps {
   onRestrictedUser: (user: any) => void;
@@ -39,7 +39,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onRestrictedUser }) => {
       } else {
         // Check if the login failed due to account status
         if (result.accountStatus && result.accountStatus !== 'active') {
-          const user = localDatabase.users.find(u => u.email === email && u.password === password);
+          const user = userDatabase.users.find(u => u.email === email && u.password === password);
           if (user) {
             onRestrictedUser(user);
             return;

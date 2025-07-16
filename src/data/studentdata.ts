@@ -1,3 +1,123 @@
+import defaultAvatar from '@/assets/default-avatar.png';
+
+// Utility function to convert image name to proper avatar URL with fallback
+const formatAvatarUrl = (imageName: string): string => {
+  if (!imageName) return defaultAvatar;
+  
+  // Clean the name and replace spaces with %20 for URL encoding
+  const cleanName = imageName.replace('src/assets/photos/', '').replace('.JPG', '.JPG');
+  const encodedName = encodeURIComponent(cleanName);
+  
+  // Return GitHub URL with fallback
+  return `https://gloriouschools.github.io/rising-star-connect/src/assets/photos/${encodedName}`;
+};
+
+// Fallback function for missing photos
+const getAvatarWithFallback = (photoName?: string): string => {
+  if (!photoName) return defaultAvatar;
+  return formatAvatarUrl(photoName);
+};
+
+// Map student names to photo filenames (based on available photos)
+const photoMap: Record<string, string> = {
+  "Adriana Liam Mirimu": "ADRIANA LIAM MIRIMU.JPG",
+  "Ahimbisibwe Emmanuel": "AHIMBISIBWE EMMANUEL.JPG",
+  "Alba Promise Kobusingye": "ALBA PROMISE KOBUSINGYE.JPG",
+  "Albara-U Yahaya Musoke": "ALBARA-U YAHAYA MUSOKE.JPG",
+  "Amanyabyona Joseph Collins": "AMANYABYONA JOSEPH COLLINS.JPG",
+  "Ankunda Liam": "ANKUNDA LIAM.JPG",
+  "Atungire Elijah": "ATUNGIRE ELIJAH.JPG",
+  "Ava Malaika Dhamuzungu": "AVA MALAIKA DHAMUZUNGU.JPG",
+  "Bagabe Abel": "BAGABE ABEL.JPG",
+  "Birungi Hidaya": "BIRUNGI HIDAYA.JPG",
+  "Bwogi Deighton": "BWOGI DEIGHTON.JPG",
+  "Byamukama Matthew Charles": "BYAMUKAMA MATTHEW CHARLES.JPG",
+  "Dhedonga Rehema Marina": "DHEDONGA REHEMA MARINA.JPG",
+  "Eglah Abi Gara": "EGLAH ABI GARA.JPG",
+  "Eli Timao Edube": "ELI TIMAO EDUBE.JPG",
+  "Favour Gideon Mayiga": "FAVOUR GIDEON MAYIGA.JPG",
+  "Itungo Lionel Ruta": "ITUNGO LIONEL RUTA.JPG",
+  "Jake William Katende": "JAKE WILLIAM KATENDE.JPG",
+  "Jean Bright Jooga": "JEAN BRIGHT  JOOGA.JPG",
+  "Jean Peter Ddamulira": "JEAN PETER DDAMULIRA.JPG",
+  "Jedidiah Kahuma Kazooba": "JEDIDIAH KAHUMA KAZOOBA.JPG",
+  "Kalule Victor Leander": "KALULE VICTOR LEANDER.JPG",
+  "Katende Josiah Charles": "KATENDE JOSIAH CHARLES.JPG",
+  "Katongole Gertrude": "KATONGOLE GERTRUDE.JPG",
+  "Katongole Mona": "KATONGOLE MONA.JPG",
+  "Katumba Dalton Surprise": "KATUMBA DALTON SURPRISE.JPG",
+  "Kaweesi Jayden Hope": "KAWEESI JAYDEN HOPE.JPG",
+  "Kijjambu Mark Morgan": "KIJJAMBU MARK MORGAN.JPG",
+  "Kirabo Bryson Kyle": "KIRABO BRYSON KYLE.JPG",
+  "Kobufura Ashley Krysten": "KOBUFURA ASHLEY KRYSTEN.JPG",
+  "Krystabell Ariana Wavamunno": "KRYSTABELL ARIANA WAVAMUNNO.JPG",
+  "Kukunda Kirsten": "KUKUNDA KIRSTEN.JPG",
+  "Levi Gataali Muzima": "LEVI GATAALI MUZIMA.JPG",
+  "Lubega Keron": "LUBEGA KERON.JPG",
+  "Matsiko Dan": "MATSIKO DAN.JPG",
+  "Mugenyi Calvin": "MUGENYI CALVIN.JPG",
+  "Mukisa Jesse": "MUKISA JESSE.JPG",
+  "Mukula Odysseus Bridgeous": "MUKULA ODYSSEUS BRIDGEOUS.JPG",
+  "Mulungi Adonai": "MULUNGI ADONAI.JPG",
+  "Mulwana Bernice": "MULWANA BERNICE.JPG",
+  "Mutebi Hafizu Kigongo": "MUTEBI HAFIZU KIGONGO.JPG",
+  "Mutyaba Keron": "MUTYABA KERON.JPG",
+  "Muwanguzi Israel": "MUWANGUZI ISRAEL.JPG",
+  "Mwiza Atalia Abrielle": "MWIZA ATALIA ABRIELLE.JPG",
+  "Mwiza Martha Kimberly": "MWIZA MARTHA KIMBERLY.JPG",
+  "Nabukenya Samantha": "NABUKENYA SAMANTHA.JPG",
+  "Nabuule Eliana Malaika Kaye": "NABUULE ELIANA MALAIKA KAYE.JPG",
+  "Nabuyondo Nairah": "NABUYONDO NAIRAH.JPG",
+  "Nakaddu Ellyvick": "NAKADDU ELLYVICK.JPG",
+  "Nakamatte Norah Christine": "NAKAMATTE NORAH CHRISTINE.JPG",
+  "Nakanwagi Jean Alba": "NAKANWAGI JEAN ALBA.JPG",
+  "Nakayiwa Esther": "NAKAYIWA ESTHER.JPG",
+  "Nakitto Rashimah": "NAKITTO RASHIMAH.JPG",
+  "Nalubowa Allison Juliet": "NALUBOWA ALLISON JULIET.JPG",
+  "Nalutaaya Petronillah": "NALUTAAYA PETRONILLAH.JPG",
+  "Namakula Sophia": "NAMAKULA SOPHIA.JPG",
+  "Nambajjwe Valeria": "NAMBAJJWE VALERIA.JPG",
+  "Nansubuga Theo Elsie": "NANSUBUGA THEO ELSIE.JPG",
+  "Natumi Shahid Papa": "NATUMI SHAHID PAPA.JPG",
+  "Nazeba Leo": "NAZEBA LEO.JPG",
+  "Nowamani Sharapova": "NOWAMANI SHARAPOVA.JPG",
+  "Ntambazi Jeison Joseph": "NTAMBAZI JEISON JOSEPH.JPG",
+  "Nyabun Bith": "NYABUN BITH.JPG",
+  "Nyesiga Othniel": "NYESIGA OTHNIEL.JPG",
+  "Odeke Miracle Daniel": "ODEKE MIRACLE DANIEL.JPG",
+  "Ojambo Devlin Paul": "OJAMBO DEVLIN PAUL.JPG",
+  "Owori Calvin Franklin": "OWORI CALVIN FRANKLIN.JPG",
+  "Pria Angel": "PRIA ANGEL.JPG",
+  "Rukundo Elizabeth": "RUKUNDO ELIZABETH.JPG",
+  "Rukundo Faith Canty": "RUKUNDO FAITH CANTY.JPG",
+  "Ssempa Malcom Mathew": "SSEMPA MALCOM MATHEW.JPG",
+  "Ssempebwa Jonathan Gideon": "SSEMPEBWA JONATHAN GIDEON.JPG",
+  "Ssengendo Victoria Miracle": "SSENGENDO VICTORIA MIRACLE.JPG",
+  "Ssengooba Tendo Enock": "SSENGOOBA TENDO ENOCK.JPG",
+  "Ssenyimba Don Elijah": "SSENYIMBA DON ELIJAH.JPG",
+  "Ssenyonga Elijah Adrian": "SSENYONGA ELIJAH ADRIAN.JPG",
+  "Suku Holly Laelle": "SUKU HOLLY LAELLE.JPG",
+  "Tamara Ava Mulungi Ndugwa": "TAMARA AVA MULUNGI NDUGWA.JPG",
+  "Twebaze Esther": "TWEBAZE ESTHER.JPG",
+  "Wasajja Charles Dickens": "WASAJJA CHARLES DICKENS.JPG"
+};
+
+// Function to get photo filename for a student name
+const getPhotoFilename = (name: string): string | undefined => {
+  // Direct match
+  if (photoMap[name]) return photoMap[name];
+  
+  // Try partial matches for similar names
+  const keys = Object.keys(photoMap);
+  const similarKey = keys.find(key => {
+    const keyParts = key.toLowerCase().split(' ');
+    const nameParts = name.toLowerCase().split(' ');
+    return keyParts.some(part => nameParts.some(namePart => part.includes(namePart) || namePart.includes(part)));
+  });
+  
+  return similarKey ? photoMap[similarKey] : undefined;
+};
+
 // Student data organized by class with required fields only
 const studentsByClass = {
   "JUNIOR_ONE": [
@@ -384,60 +504,74 @@ const studentsByClass = {
   ]
 };
 
-// Helper function to parse full names
-function parseFullName(name: string) {
-  const parts = name.trim().split(' ');
-  const firstName = parts[0] || '';
-  const lastName = parts[parts.length - 1] || '';
-  const middleName = parts.length > 2 ? parts.slice(1, -1).join(' ') : (parts.length === 2 ? '' : parts[1] || '');
-  
-  return { firstName, middleName, lastName };
+// Interface for User with extended profile
+export interface User {
+  id: string;
+  email: string;
+  password: string;
+  role: 'admin' | 'teacher' | 'parent' | 'pupil' | 'non-teaching';
+  name: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  phone: string;
+  address: string;
+  title?: string;
+  gender?: string;
+  subject?: string;
+  department: string;
+  qualification: string;
+  experience: string;
+  joinDate: string;
+  bio: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  avatar?: string;
+  class?: string;
+  children?: string[];
+  accountStatus: 'active' | 'inactive' | 'suspended' | 'archived' | 'expelled';
+  dateOfBirth?: string;
+  schoolPayCode?: string;
 }
 
-// Helper function to generate email
-function generateEmail(name: string) {
-  return `${name.toLowerCase().replace(/\s+/g, '.')}@pupil.springingstars.ac.ug`;
-}
+// Export studentsByClass for backward compatibility
+export { studentsByClass };
 
-// Helper function to determine gender from name (basic implementation)
-function inferGender(firstName: string): string {
-  const femaleNames = ['adriana', 'faith', 'hayat', 'emma', 'samantha', 'lynah', 'audrey', 'maria', 'hannah', 'tendo', 'blessing', 'bianca', 'ariella', 'angelina', 'meaghan', 'rahia', 'robinah', 'angelica', 'chloe', 'yasmeen', 'hope', 'nissi', 'kiara', 'eliana', 'rashimah', 'esther', 'tamara', 'ava', 'hidayah', 'elsie', 'theo', 'mona', 'ashley', 'adriana', 'elizabeth', 'hanan', 'mary', 'sophia', 'norah', 'krystabel', 'rayana', 'candice', 'latifah', 'tatyana', 'valeria', 'leah', 'alba', 'petronillah', 'victoria', 'allison', 'amantha', 'angel', 'martha', 'atalia', 'gertrude', 'canty', 'nairah', 'sharapova', 'ellyvick', 'bernice', 'myrah', 'raphaella', 'rania', 'hannan', 'jamirah', 'mildred', 'kayla', 'zoey', 'atarah', 'nina', 'mirabel', 'ariella', 'cynthia', 'elsie', 'kaye', 'hazel', 'yvonne', 'noella', 'kerisha', 'eliana', 'amaris', 'keza', 'clara', 'michelle', 'gabriella', 'manuella', 'ann', 'racheal', 'ariana', 'ivy', 'williams', 'natania', 'rose', 'myra', 'patience', 'lisa', 'margaret', 'hellena', 'favour', 'gabrielle', 'abigail', 'isabella', 'daphine', 'tamia', 'gemma', 'alia', 'victoria', 'malaika', 'petralina', 'aretha', 'jessica', 'ruth', 'winslet', 'afreen', 'hannah', 'rihanna', 'dasia', 'chen', 'adeline', 'gloria', 'tatiana', 'monica', 'makanga', 'aurora', 'jacinta', 'mirabel', 'mirella', 'precious', 'mayani', 'abigail', 'michelle', 'audrey', 'miranda', 'hazel', 'nankya', 'adel', 'kyna', 'queen', 'ivy', 'jamie', 'jombwe', 'sarah', 'trizah', 'aleng', 'kristian', 'dapherah', 'zaabu', 'margret', 'wendy', 'arielle', 'ramah', 'maria', 'isabella', 'sheena', 'elisheba', 'philberta', 'tarah', 'nalwoga', 'ashley', 'harmony', 'lily'];
-  return femaleNames.includes(firstName.toLowerCase()) ? 'Female' : 'Male';
-}
-
-// Generate students array from organized data
-const generateStudents = () => {
-  let id = 1;
-  const students = [];
-
-  Object.entries(studentsByClass).forEach(([className, studentData]) => {
-    studentData.forEach(student => {
-      const { firstName, middleName, lastName } = parseFullName(student.name);
+// Convert student data to User format
+export const localStudentDatabase = {
+  studentsByClass,
+  users: Object.entries(studentsByClass).flatMap(([className, students], classIndex) =>
+    students.map((student, index) => {
+      const globalId = (classIndex * 1000) + index + 1;
+      const imageName = getPhotoFilename(student.name);
       
-      const studentRecord = {
-        id: id.toString(),
-        email: generateEmail(student.name),
+      return {
+        id: globalId.toString(),
+        email: `${student.name.toLowerCase().replace(/[^a-z\s]/g, '').replace(/\s+/g, '.')}@pupil.springingstars.ac.ug`,
         password: 'pupil123',
         role: 'pupil' as const,
         name: student.name,
-        firstName: firstName,
-        middleName: middleName,
-        lastName: lastName,
-        gender: inferGender(firstName),
-        class: className.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase()),
-        avatar: `https://fresh-teacher-uganda.github.io/talk-of-the-day/src/assets/photos/${encodeURIComponent(student.name)}.JPG`,
+        firstName: student.name.split(' ')[0] || '',
+        middleName: student.name.split(' ').length > 2 ? student.name.split(' ').slice(1, -1).join(' ') : '',
+        lastName: student.name.split(' ').pop() || '',
+        phone: `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
+        address: 'Kampala, Uganda',
+        title: '',
+        gender: Math.random() > 0.5 ? 'male' : 'female',
+        subject: 'All Subjects',
+        department: 'Primary',
+        qualification: 'PLE Candidate',
+        experience: 'N/A',
+        joinDate: '2024-01-01',
+        bio: `A dedicated student at Springing Stars Junior School studying in ${className.replace(/_/g, ' ')}.`,
+        emergencyContact: 'Parent/Guardian',
+        emergencyPhone: `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
+        avatar: getAvatarWithFallback(imageName),
+        class: className.replace(/_/g, ' '),
+        accountStatus: 'active' as const,
         dateOfBirth: student.dob,
         schoolPayCode: student.school_pay_code
       };
-      students.push(studentRecord);
-      id++;
-    });
-  });
-
-  return students;
-};
-
-export const localStudentDatabase = {
-  users: generateStudents(),
-  studentsByClass
+    })
+  )
 };

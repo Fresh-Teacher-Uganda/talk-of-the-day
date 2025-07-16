@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
-import { localDatabase } from '@/data/localDatabase';
+import { userDatabase } from '@/data/userDatabase';
 import { ProfileData } from '@/types/profile';
 import { User } from '@/types/auth';
 
@@ -34,7 +34,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
         setProfileData(JSON.parse(savedProfile));
       } else {
         // Initialize with user data from auth
-        const initialProfile = localDatabase.dummyProfiles[user.id];
+        const initialProfile = userDatabase.dummyProfiles[user.id];
         if (initialProfile) {
           setProfileData(initialProfile);
           localStorage.setItem(`profile_${user.id}`, JSON.stringify(initialProfile));

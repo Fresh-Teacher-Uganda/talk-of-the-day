@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthState } from '@/types/auth';
-import { localDatabase } from '@/data/localDatabase';
+import { userDatabase } from '@/data/userDatabase';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string; accountStatus?: string }>;
@@ -59,10 +59,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user.statusReason = undefined;
         user.statusDate = undefined;
         
-        // Update in local database
-        const userIndex = localDatabase.users.findIndex(u => u.id === user.id);
+        // Update in user database
+        const userIndex = userDatabase.users.findIndex(u => u.id === user.id);
         if (userIndex !== -1) {
-          localDatabase.users[userIndex] = user;
+          userDatabase.users[userIndex] = user;
         }
         
         return 'active';
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string; accountStatus?: string }> => {
     try {
-      const user = localDatabase.users.find(u => u.email === email && u.password === password);
+      const user = userDatabase.users.find(u => u.email === email && u.password === password);
       
       if (user) {
         const accountStatus = checkAccountStatus(user);
@@ -126,10 +126,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       updatedBy: string;
     }
   ) => {
-    const userIndex = localDatabase.users.findIndex(u => u.id === userId);
+    const userIndex = userDatabase.users.findIndex(u => u.id === userId);
     if (userIndex !== -1) {
-      localDatabase.users[userIndex] = {
-        ...localDatabase.users[userIndex],
+      userDatabase.users[userIndex] = {
+        ...userDatabase.users[userIndex],
         accountStatus: status,
         statusReason: data.reason,
         statusDate: new Date().toISOString(),

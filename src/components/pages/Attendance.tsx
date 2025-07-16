@@ -22,7 +22,12 @@ import { localStudentDatabase } from '@/data/studentdata';
 export const Attendance = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { attendanceRecords, loading, updateAttendanceStatus, bulkUpdateAttendance } = useAttendanceData();
+  
+  // State declarations first
+  const [selectedClass, setSelectedClass] = useState<string>('');
+  
+  // Hook that depends on selectedClass
+  const { attendanceRecords, loading, updateAttendanceStatus, bulkUpdateAttendance } = useAttendanceData(selectedClass);
   
   // Get available classes from student database with student counts
   const classesWithCounts = useMemo(() => {
@@ -37,8 +42,6 @@ export const Attendance = () => {
       .map(([className, count]) => ({ name: className, count }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }, []);
-  
-  const [selectedClass, setSelectedClass] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [showClassSelection, setShowClassSelection] = useState(true);
@@ -111,14 +114,9 @@ export const Attendance = () => {
   const canManageAttendance = user?.role === 'admin' || user?.role === 'teacher';
 
   const handleClassSelect = (className: string) => {
-    setLoadingStudents(true);
-    // Simulate loading time for student filtering
-    setTimeout(() => {
-      setSelectedClass(className);
-      setShowClassSelection(false);
-      setSelectedStudents([]);
-      setLoadingStudents(false);
-    }, 800);
+    setSelectedClass(className);
+    setShowClassSelection(false);
+    setSelectedStudents([]);
   };
 
   return (
@@ -145,7 +143,11 @@ export const Attendance = () => {
       {showClassSelection && (
         <AnimatedInView>
           {loading ? (
-            <LoadingClassGrid />
+            <ColorfulSpinner 
+              type="attendance" 
+              message="Loading classes..."
+              size="lg"
+            />
           ) : (
             <Card>
               <CardHeader>
@@ -185,19 +187,9 @@ export const Attendance = () => {
         </AnimatedInView>
       )}
 
-      {/* Loading Students Overlay */}
-      {loadingStudents && (
-        <AnimatedInView>
-          <ColorfulSpinner 
-            type="students" 
-            message="Loading student attendance records..." 
-            size="lg"
-          />
-        </AnimatedInView>
-      )}
 
       {/* Current Selection & Stats */}
-      {!showClassSelection && !loadingStudents && (
+      {!showClassSelection && (
         <>
           <AnimatedInView>
             <Card>
@@ -227,7 +219,11 @@ export const Attendance = () => {
           {/* Stats Cards */}
           <AnimatedInView>
             {loading ? (
-              <LoadingStatsCards />
+              <ColorfulSpinner 
+                type="attendance" 
+                message="Loading attendance stats..."
+                size="md"
+              />
             ) : (
               <AttendanceStats records={filteredRecords} />
             )}
@@ -236,7 +232,7 @@ export const Attendance = () => {
       )}
 
       {/* Search Filter */}
-      {!showClassSelection && !loadingStudents && (
+      {!showClassSelection && (
         <AnimatedInView>
           <Card>
             <CardContent className="p-3 sm:p-4">
@@ -259,10 +255,14 @@ export const Attendance = () => {
       )}
 
       {/* Attendance Table */}
-      {!showClassSelection && !loadingStudents && (
+      {!showClassSelection && (
         <AnimatedInView>
           {loading ? (
-            <LoadingTable />
+            <ColorfulSpinner 
+              type="attendance" 
+              message="Loading student attendance..."
+              size="lg"
+            />
           ) : (
             <AttendanceTable
               records={filteredRecords}

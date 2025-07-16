@@ -16,12 +16,14 @@ import { Settings } from '@/components/pages/Settings';
 import { Timetable } from '@/components/pages/Timetable';
 import { Assignments } from '@/components/pages/Assignments';
 import { Results } from '@/components/pages/Results';
+import { Grades } from '@/components/pages/Grades';
 import { Notifications } from '@/components/pages/Notifications';
 import { Attendance } from '@/components/pages/Attendance';
 import { Facilities } from '@/components/pages/Facilities';
 import { Communication } from '@/components/pages/Communication';
 import { Help } from '@/components/pages/Help';
 import { Library } from '@/components/pages/Library';
+import Clubs from '@/components/pages/Clubs';
 import About from '@/pages/About';
 import WhyUs from '@/pages/WhyUs';
 import Contact from '@/pages/Contact';
@@ -31,26 +33,30 @@ import Disclaimer from '@/pages/Disclaimer';
 import NotFound from '@/pages/NotFound';
 import { ProtectedRoute } from './ProtectedRoute';
 import { Dashboard } from './Dashboard';
-import { pageTransitions } from '@/config/pageTransitions';
+import { pageTransitions, routeTransitions, transitionConfig } from '@/config/pageTransitions';
 
 export const AppRoutes: React.FC = () => {
   const location = useLocation();
-  const [transition, setTransition] = useState(pageTransitions[0]);
-
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * pageTransitions.length);
-    setTransition(pageTransitions[randomIndex]);
-  }, [location.pathname]);
+  
+  // Get transition based on current route for consistent UX
+  const getTransitionForRoute = (pathname: string) => {
+    const transitionName = routeTransitions[pathname] || routeTransitions.default;
+    return pageTransitions[transitionName];
+  };
+  
+  const currentTransition = getTransitionForRoute(location.pathname);
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        variants={transition.variants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={{ duration: 0.35, ease: "easeInOut" }}
+        initial={currentTransition.initial}
+        animate={currentTransition.animate}
+        exit={currentTransition.exit}
+        transition={{
+          duration: 0.15,
+          ease: "easeOut"
+        }}
       >
         <Routes location={location}>
           {/* Public routes */}
@@ -175,6 +181,14 @@ export const AppRoutes: React.FC = () => {
             </ProtectedRoute>
           } />
 
+          <Route path="/grades" element={
+            <ProtectedRoute>
+              <Layout>
+                <Grades />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
           <Route path="/notifications" element={
             <ProtectedRoute>
               <Layout>
@@ -211,6 +225,14 @@ export const AppRoutes: React.FC = () => {
             <ProtectedRoute>
               <Layout>
                 <Library />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/clubs" element={
+            <ProtectedRoute>
+              <Layout>
+                <Clubs />
               </Layout>
             </ProtectedRoute>
           } />

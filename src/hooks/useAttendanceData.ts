@@ -17,64 +17,66 @@ interface AttendanceRecord {
 
 const STORAGE_KEY = 'attendance_records';
 
-// Generate attendance records from real student data
-const generateDefaultRecords = (): AttendanceRecord[] => {
-  const students = localStudentDatabase.users.filter(user => user.role === 'pupil');
-  console.log('Total students from database:', localStudentDatabase.users.length);
-  console.log('Students with pupil role:', students.length);
-  console.log('First 3 students:', students.slice(0, 3));
+// Generate attendance records for a specific class
+const generateRecordsForClass = (className: string): AttendanceRecord[] => {
+  const students = localStudentDatabase.users.filter(user => 
+    user.role === 'pupil' && user.class === className
+  );
   
   const today = format(new Date(), 'yyyy-MM-dd');
   
-  return students.map((student, index) => {
-    const record: AttendanceRecord = {
-      id: student.id,
-      studentId: student.id,
-      studentName: student.name,
-      class: student.class,
-      date: today,
-      status: 'present', // Set all to present by default
-      timeIn: '8:00 AM',
-      timeOut: '3:30 PM',
-      remarks: undefined
-    };
-    return record;
-  });
+  return students.map((student) => ({
+    id: student.id,
+    studentId: student.id,
+    studentName: student.name,
+    class: student.class,
+    date: today,
+    status: 'present' as const,
+    timeIn: '8:00 AM',
+    timeOut: '3:30 PM',
+    remarks: undefined
+  }));
 };
 
-const defaultRecords: AttendanceRecord[] = generateDefaultRecords();
-
-export const useAttendanceData = () => {
+export const useAttendanceData = (selectedClass?: string) => {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  // Load data from localStorage on mount
+  // Load data efficiently based on selected class
   useEffect(() => {
+    if (!selectedClass) {
+      setAttendanceRecords([]);
+      return;
+    }
+
     setLoading(true);
-    // Simulate loading delay for better UX
-    setTimeout(() => {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        try {
-          const parsedData = JSON.parse(savedData);
-          setAttendanceRecords(parsedData);
-        } catch (error) {
-          console.error('Error loading attendance data:', error);
-          setAttendanceRecords(defaultRecords);
-        }
-      } else {
-        setAttendanceRecords(defaultRecords);
+    
+    // Quick load without artificial delay
+    const storageKey = `${STORAGE_KEY}_${selectedClass}`;
+    const savedData = localStorage.getItem(storageKey);
+    
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setAttendanceRecords(parsedData);
+      } catch (error) {
+        console.error('Error loading attendance data:', error);
+        setAttendanceRecords(generateRecordsForClass(selectedClass));
       }
-      setLoading(false);
-    }, 1000);
-  }, []);
+    } else {
+      setAttendanceRecords(generateRecordsForClass(selectedClass));
+    }
+    
+    setLoading(false);
+  }, [selectedClass]);
 
   // Save data to localStorage whenever records change
   useEffect(() => {
-    if (attendanceRecords.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(attendanceRecords));
+    if (attendanceRecords.length > 0 && selectedClass) {
+      const storageKey = `${STORAGE_KEY}_${selectedClass}`;
+      localStorage.setItem(storageKey, JSON.stringify(attendanceRecords));
     }
-  }, [attendanceRecords]);
+  }, [attendanceRecords, selectedClass]);
 
   const updateAttendanceStatus = (studentId: string, status: AttendanceRecord['status']) => {
     const currentTime = new Date().toLocaleTimeString('en-US', { 

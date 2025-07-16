@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { localDatabase } from '@/data/localDatabase';
+import { userDatabase } from '@/data/userDatabase';
 
 interface EmailInputProps {
   value: string;
@@ -23,7 +23,7 @@ export const EmailInput: React.FC<EmailInputProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   // Get all unique emails from the database
-  const allEmails = localDatabase.users.map(user => user.email);
+  const allEmails = userDatabase.users.map(user => user.email);
 
   useEffect(() => {
     if (value.length > 0) {

@@ -35,7 +35,7 @@ export const AdminStatsCards = () => {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <AnimatedInView key={i}>
+          <AnimatedInView key={i} animation="zoomIn" delay={i * 0.1}>
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-sm font-medium">
@@ -56,8 +56,8 @@ export const AdminStatsCards = () => {
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <AnimatedInView>
-        <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+      <AnimatedInView animation="slideLeft" delay={0}>
+        <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-xl transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center space-x-2 text-sm font-medium">
               <Users className="h-4 w-4" />
@@ -71,8 +71,8 @@ export const AdminStatsCards = () => {
         </Card>
       </AnimatedInView>
 
-      <AnimatedInView>
-        <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+      <AnimatedInView animation="slideUp" delay={0.1}>
+        <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-xl transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center space-x-2 text-sm font-medium">
               <School className="h-4 w-4" />
@@ -86,8 +86,8 @@ export const AdminStatsCards = () => {
         </Card>
       </AnimatedInView>
 
-      <AnimatedInView>
-        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+      <AnimatedInView animation="slideDown" delay={0.2}>
+        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-xl transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center space-x-2 text-sm font-medium">
               <TrendingUp className="h-4 w-4" />
@@ -101,8 +101,8 @@ export const AdminStatsCards = () => {
         </Card>
       </AnimatedInView>
 
-      <AnimatedInView>
-        <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+      <AnimatedInView animation="slideRight" delay={0.3}>
+        <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:shadow-xl transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center space-x-2 text-sm font-medium">
               <DollarSign className="h-4 w-4" />

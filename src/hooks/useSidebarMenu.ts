@@ -136,6 +136,7 @@ export const useSidebarMenu = () => {
       help: { title: 'Help & Support', icon: HelpCircle, id: 'help' },
       facilities: { title: 'Facilities', icon: Building, id: 'facilities' },
       grades: { title: 'My Grades', icon: Award, id: 'grades' },
+      clubs: { title: 'Clubs', icon: Users, id: 'clubs' },
     };
 
     const rolesConfig = {
@@ -163,7 +164,8 @@ export const useSidebarMenu = () => {
         'timetable', 
         'attendance', 
         'library',
-        'communication', 
+        'communication',
+        'clubs',
         'help'
       ],
       parent: [
@@ -189,7 +191,8 @@ export const useSidebarMenu = () => {
         'attendance', 
         'facilities', 
         'library',
-        'communication', 
+        'communication',
+        'clubs',
         'notifications'
       ],
       'non-teaching': [
