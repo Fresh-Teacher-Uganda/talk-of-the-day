@@ -21,6 +21,8 @@ import { toast } from '@/hooks/use-toast';
 import { ClassDialog } from '@/components/classes/ClassDialog';
 import { ClassDetailsDialog } from '@/components/classes/ClassDetailsDialog';
 import { localStudentDatabase } from '@/data/studentdata';
+import { classes as classesDefinitions } from '@/data/classes';
+import { getSubjectById as getSubjectData } from '@/data/subjects';
 
 interface ClassData {
   id: string;
@@ -52,33 +54,47 @@ export const Classes = () => {
       const formattedClassName = className.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
       const studentCount = students.length;
       
-      // Determine class level and subjects based on class name
-      let level = '';
+      // Find matching class data from dedicated classes data
+      const classDataItem = classesDefinitions.find(cls => 
+        cls.name.toUpperCase().replace(/\s+/g, '_') === className
+      );
+      
+      let level = formattedClassName;
       let subjects: string[] = [];
       let capacity = 35;
       
-      if (className.includes('JUNIOR')) {
-        level = formattedClassName;
-        subjects = ['Mathematics', 'English', 'Science', 'Social Studies'];
-        if (className.includes('THREE') || className.includes('FOUR')) {
-          subjects.push('Art', 'Computer');
+      if (classDataItem) {
+        level = classDataItem.level;
+        capacity = classDataItem.capacity;
+        // Get subject display names
+        subjects = classDataItem.subjects.map(subjectId => {
+          const subject = getSubjectData(subjectId);
+          return subject ? subject.displayName : subjectId;
+        });
+      } else {
+        // Fallback for classes not in the dedicated data
+        if (className.includes('JUNIOR')) {
+          subjects = ['Mathematics', 'English', 'Science', 'Social Studies'];
+          if (className.includes('THREE') || className.includes('FOUR')) {
+            subjects.push('Art', 'Computer');
+          }
+        } else if (className.includes('PRE_PRIMARY')) {
+          level = 'Pre-Primary';
+          subjects = ['Reading Readiness', 'Number Work', 'Art & Craft', 'Physical Education'];
+          capacity = 25;
+        } else if (className.includes('HEADSTART')) {
+          level = 'Headstart';
+          subjects = ['Pre-Reading', 'Pre-Math', 'Creative Play', 'Physical Development'];
+          capacity = 20;
+        } else if (className.includes('BEGINNER')) {
+          level = 'Beginner';
+          subjects = ['Letter Recognition', 'Number Recognition', 'Art', 'Music & Movement'];
+          capacity = 20;
+        } else if (className.includes('RECEPTION')) {
+          level = 'Reception';
+          subjects = ['Phonics', 'Basic Math', 'Art', 'Physical Education'];
+          capacity = 25;
         }
-      } else if (className.includes('PRE_PRIMARY')) {
-        level = 'Pre-Primary';
-        subjects = ['Reading Readiness', 'Number Work', 'Art & Craft', 'Physical Education'];
-        capacity = 25;
-      } else if (className.includes('HEADSTART')) {
-        level = 'Headstart';
-        subjects = ['Pre-Reading', 'Pre-Math', 'Creative Play', 'Physical Development'];
-        capacity = 20;
-      } else if (className.includes('BEGINNER')) {
-        level = 'Beginner';
-        subjects = ['Letter Recognition', 'Number Recognition', 'Art', 'Music & Movement'];
-        capacity = 20;
-      } else if (className.includes('RECEPTION')) {
-        level = 'Reception';
-        subjects = ['Phonics', 'Basic Math', 'Art', 'Physical Education'];
-        capacity = 25;
       }
       
       classesData.push({

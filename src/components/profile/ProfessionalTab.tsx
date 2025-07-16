@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
+import { subjectNames } from '@/data/subjects';
 
 interface ProfessionalTabProps {
   formData: any;
@@ -81,11 +82,7 @@ export const ProfessionalTab: React.FC<ProfessionalTabProps> = ({
     'P.4A', 'P.4B', 'P.5A', 'P.5B', 'P.6A', 'P.6B', 'P.7A', 'P.7B'
   ];
 
-  const availableSubjects = [
-    'Mathematics', 'English', 'Science', 'Social Studies', 
-    'Religious Education', 'Physical Education', 'Art & Craft',
-    'Computer Studies', 'Music', 'Local Language'
-  ];
+  const availableSubjects = subjectNames;
 
   const showResponsibilities = user?.role === 'teacher' || user?.role === 'non-teaching';
 

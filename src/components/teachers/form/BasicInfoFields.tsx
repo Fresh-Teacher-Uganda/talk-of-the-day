@@ -14,11 +14,9 @@ interface BasicInfoFieldsProps {
   onInputChange: (field: string, value: string) => void;
 }
 
-const availableSubjects = [
-  'Mathematics', 'English', 'Science', 'Social Studies', 'Art & Craft', 
-  'Physical Education', 'Music', 'Religious Education', 'Computer Studies',
-  'Agriculture', 'Home Economics', 'French', 'Luganda'
-];
+import { subjectNames } from '@/data/subjects';
+
+const availableSubjects = subjectNames;
 
 export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
   formData,

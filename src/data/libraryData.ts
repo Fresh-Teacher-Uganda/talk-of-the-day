@@ -412,9 +412,9 @@ export const libraryData: LibraryDocument[] = [
   }
 ];
 
-export const classes = ['Baby Class', 'Middle Class', 'Top Class', 'Primary One', 'Primary Two', 'Primary Three', 'Primary Four', 'Primary Five', 'Primary Six', 'Primary Seven'];
-
-export const subjects = ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education', 'Art', 'Physical Education'];
+// Import classes and subjects from dedicated data files
+export { classNames as classes } from './classes';
+export { subjectNames as subjects } from './subjects';
 
 export const resourceTypes = [
   { id: 'lesson-notes', label: 'Lesson Notes' },

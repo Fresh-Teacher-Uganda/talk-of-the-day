@@ -8,105 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClubJoinDialog } from "@/components/clubs/ClubJoinDialog";
 import { ClubMembersDialog } from "@/components/clubs/ClubMembersDialog";
 
-interface Club {
-  id: string;
-  name: string;
-  day: string;
-  time: string;
-  location: string;
-  coordinator: string;
-  description: string;
-  participants: number;
-  maxParticipants: number;
-  category: "sports" | "arts" | "academic" | "other";
-}
-
-const clubs: Club[] = [
-  {
-    id: "1",
-    name: "Swimming",
-    day: "Thursday",
-    time: "2:00 PM - 4:00 PM",
-    location: "Swimming Pool",
-    coordinator: "Swimming Instructor",
-    description: "Learn swimming techniques and water safety skills",
-    participants: 15,
-    maxParticipants: 20,
-    category: "sports"
-  },
-  {
-    id: "2",
-    name: "Badminton",
-    day: "Wednesday",
-    time: "3:00 PM - 5:00 PM",
-    location: "Sports Hall",
-    coordinator: "Sports Teacher",
-    description: "Develop badminton skills and competitive spirit",
-    participants: 12,
-    maxParticipants: 16,
-    category: "sports"
-  },
-  {
-    id: "3",
-    name: "Cookery",
-    day: "Wednesday",
-    time: "2:30 PM - 4:30 PM",
-    location: "Kitchen Lab",
-    coordinator: "Home Economics Teacher",
-    description: "Learn cooking skills and food preparation",
-    participants: 10,
-    maxParticipants: 12,
-    category: "other"
-  },
-  {
-    id: "4",
-    name: "Aviation",
-    day: "Wednesday",
-    time: "3:30 PM - 5:00 PM",
-    location: "Science Lab",
-    coordinator: "Science Teacher",
-    description: "Explore aviation principles and aircraft design",
-    participants: 8,
-    maxParticipants: 15,
-    category: "academic"
-  },
-  {
-    id: "5",
-    name: "Music",
-    day: "Wednesday",
-    time: "2:00 PM - 4:00 PM",
-    location: "Music Room",
-    coordinator: "Tr. Mbabazi Seth",
-    description: "Learn musical instruments and vocal techniques",
-    participants: 18,
-    maxParticipants: 25,
-    category: "arts"
-  },
-  {
-    id: "6",
-    name: "Football",
-    day: "Wednesday",
-    time: "4:00 PM - 6:00 PM",
-    location: "Football Field",
-    coordinator: "Tr. Nakiyemba Shakira",
-    description: "Develop football skills and teamwork",
-    participants: 22,
-    maxParticipants: 30,
-    category: "sports"
-  },
-  {
-    id: "7",
-    name: "Ballet",
-    day: "Wednesday",
-    time: "3:00 PM - 4:30 PM",
-    location: "Dance Studio",
-    coordinator: "Dance Teacher",
-    description: "Learn classical ballet techniques and performances",
-    participants: 14,
-    maxParticipants: 20,
-    category: "arts"
-  }
-];
+import { clubs, groupClubsByDay, type Club } from '@/data/clubs';
 
 export default function Clubs() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -142,11 +44,7 @@ export default function Clubs() {
     return "bg-red-100 text-red-800";
   };
 
-  const clubsByDay = clubs.reduce((acc, club) => {
-    if (!acc[club.day]) acc[club.day] = [];
-    acc[club.day].push(club);
-    return acc;
-  }, {} as Record<string, Club[]>);
+  const clubsByDay = groupClubsByDay();
 
   const handleJoinClub = (club: Club) => {
     setSelectedClub(club);

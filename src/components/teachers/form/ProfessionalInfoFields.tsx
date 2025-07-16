@@ -18,9 +18,9 @@ const qualifications = [
   'Master of Arts', 'Master of Science', 'Other'
 ];
 
-const availableDepartments = [
-  'Primary Lower', 'Primary Upper', 'Administration', 'Sports', 'Arts', 'Sciences'
-];
+import { departmentNames } from '@/data/departments';
+
+const availableDepartments = departmentNames;
 
 export const ProfessionalInfoFields: React.FC<ProfessionalInfoFieldsProps> = ({
   formData,
