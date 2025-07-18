@@ -1,5 +1,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
+import { QRCodeComponent } from "@/components/ui/qr-code";
+import { PupilIdentityModal } from "@/components/pupil/PupilIdentityModal";
+import { useState } from "react";
 
 interface ReportCardProps {
   data: {
@@ -23,6 +26,8 @@ interface ReportCardProps {
 }
 
 export const ReportCard = ({ data }: ReportCardProps) => {
+  const [showPupilModal, setShowPupilModal] = useState(false);
+  
   const getGradeColor = (grade: string): string => {
     switch (grade) {
       case "A+": return "text-green-600";
@@ -35,16 +40,29 @@ export const ReportCard = ({ data }: ReportCardProps) => {
     }
   };
 
+  // Create pupil data from report card data
+  const pupilData = {
+    id: data.studentId,
+    name: data.studentName,
+    class: data.class,
+    section: data.section,
+    rollNumber: data.rollNumber,
+    avatar: `https://via.placeholder.com/120x150/4f46e5/ffffff?text=${data.studentName.split(' ').map(n => n[0]).join('')}`
+  };
+
+  // Generate QR code data (could be a URL to pupil details page)
+  const qrCodeData = `https://school.edu/pupil/${data.studentId}`;
+
   return (
     <Card className="max-w-4xl mx-auto shadow-2xl border-0 bg-white print:shadow-none print:border">
       <CardContent className="p-0">
-        <div className="relative overflow-hidden">
-          {/* Watermark - Full Page */}
-          <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="relative overflow-hidden min-h-screen">
+          {/* Watermark - Full Page Height */}
+          <div className="absolute inset-0 pointer-events-none z-0 h-full">
             <img 
               src="https://gloriouschools.github.io/rising-star-connect/schoologo.png" 
               alt="School Logo Watermark"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-5 object-contain"
+              className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full opacity-5 object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
@@ -215,8 +233,31 @@ export const ReportCard = ({ data }: ReportCardProps) => {
               <p>This is a computer-generated report card.</p>
             </div>
           </div>
+
+          {/* QR Code Section */}
+          <div className="relative z-10 p-4 bg-transparent border-t border-gray-300">
+            <div className="flex flex-col items-center space-y-3">
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-700 mb-2">Scan for Student Details</p>
+                <QRCodeComponent 
+                  value={qrCodeData}
+                  size={80}
+                  onClick={() => setShowPupilModal(true)}
+                  className="mx-auto"
+                />
+                <p className="text-xs text-gray-600 mt-2">Click or scan QR code to view pupil identity</p>
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
+
+      {/* Pupil Identity Modal */}
+      <PupilIdentityModal
+        open={showPupilModal}
+        onOpenChange={setShowPupilModal}
+        pupilData={pupilData}
+      />
     </Card>
   );
 };
