@@ -256,7 +256,7 @@ const juniorStudentsByClass = {
   "JUNIOR_FOUR": [
     { "name": "Mohammed Adam", "dob": "1.01.2014", "school_pay_code": "1008860542" },
     { "name": "Nalubowa Allison .J.", "dob": "", "school_pay_code": "" },
-    { "name": "Kiyaga Samantha .N.", "dob": "", "school_pay_code": "" },
+    { "name": "Kiyaga Amantha .N.", "dob": "", "school_pay_code": "" },
     { "name": "Itungo Lionel Ruta", "dob": "", "school_pay_code": "" },
     { "name": "Pria Angel", "dob": "", "school_pay_code": "" },
     { "name": "Muzima Levi Gatali", "dob": "", "school_pay_code": "" },

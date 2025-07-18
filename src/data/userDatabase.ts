@@ -1,17 +1,18 @@
 import { User } from '@/types/auth';
 import { ProfileData } from '@/types/profile';
-import { localStudentDatabase } from './studentdata';
+import { localJuniorStudentDatabase } from './juniorStudentData';
+import { localKindergartenStudentDatabase } from './kindergartenStudentData';
 import { localJuniorTeachersDatabase } from './juniorTeachersData';
 import { localKindergartenTeachersDatabase } from './kindergartenTeachersData';
 import { localParentsDatabase } from './parentdata';
 import { localNonTeachingStaffDatabase } from './nonteachingstaff';
 import { localAdminDatabase } from './admindata';
 
-// Combine all user data from separate files
+// Combine all user data from separate files with actual data
 export const userDatabase = {
   users: [
-    // Students from studentdata.ts with role mapping
-    ...localStudentDatabase.users.map(student => ({
+    // Junior students with role mapping
+    ...localJuniorStudentDatabase.users.map(student => ({
       ...student,
       role: 'pupil' as const,
       phone: student.phone || `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
@@ -23,6 +24,23 @@ export const userDatabase = {
       experience: 'N/A',
       joinDate: '2024-01-01',
       bio: `A dedicated student at Springing Stars Junior School.`,
+      emergencyContact: 'Parent/Guardian',
+      emergencyPhone: `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
+      accountStatus: 'active' as const
+    })),
+    // Kindergarten students with role mapping
+    ...localKindergartenStudentDatabase.users.map(student => ({
+      ...student,
+      role: 'pupil' as const,
+      phone: student.phone || `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
+      address: student.address || 'Kampala, Uganda',
+      title: '',
+      subject: 'Pre-Primary Subjects',
+      department: 'Kindergarten',
+      qualification: 'Early Learner',
+      experience: 'N/A',
+      joinDate: '2024-01-01',
+      bio: `A young learner at Springing Stars Kindergarten.`,
       emergencyContact: 'Parent/Guardian',
       emergencyPhone: `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
       accountStatus: 'active' as const
@@ -41,9 +59,9 @@ export const userDatabase = {
 
   // Combine profile data
   dummyProfiles: {
-    // Generate profiles for all students from studentdata.ts
+    // Generate profiles for all junior students
     ...Object.fromEntries(
-      localStudentDatabase.users.map(student => [
+      localJuniorStudentDatabase.users.map(student => [
         student.id,
         {
           firstName: student.firstName,
@@ -60,6 +78,32 @@ export const userDatabase = {
           experience: 'N/A',
           joinDate: '2024-01-01',
           bio: `A dedicated student at Springing Stars Junior School.`,
+          emergencyContact: 'Parent/Guardian',
+          emergencyPhone: `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
+          avatar: student.avatar,
+          class: student.class
+        }
+      ])
+    ),
+    // Generate profiles for all kindergarten students
+    ...Object.fromEntries(
+      localKindergartenStudentDatabase.users.map(student => [
+        student.id,
+        {
+          firstName: student.firstName,
+          middleName: student.middleName,
+          lastName: student.lastName,
+          email: student.email,
+          phone: student.phone || `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
+          address: student.address || 'Kampala, Uganda',
+          title: '',
+          gender: student.gender?.toLowerCase() || 'unknown',
+          subject: 'Pre-Primary Subjects',
+          department: 'Kindergarten',
+          qualification: 'Early Learner',
+          experience: 'N/A',
+          joinDate: '2024-01-01',
+          bio: `A young learner at Springing Stars Kindergarten.`,
           emergencyContact: 'Parent/Guardian',
           emergencyPhone: `+256 77${Math.floor(1000000 + Math.random() * 9000000)}`,
           avatar: student.avatar,
@@ -196,4 +240,24 @@ export const userDatabase = {
       ])
     )
   } as Record<string, ProfileData>
+};
+
+// Export combined student databases for compatibility
+export const localStudentDatabase = {
+  studentsByClass: {
+    // Get junior student classes as arrays of basic student objects
+    JUNIOR_ONE: localJuniorStudentDatabase.users.filter(s => s.class === 'Junior One').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+    JUNIOR_TWO: localJuniorStudentDatabase.users.filter(s => s.class === 'Junior Two').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+    JUNIOR_THREE: localJuniorStudentDatabase.users.filter(s => s.class === 'Junior Three').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+    JUNIOR_FOUR: localJuniorStudentDatabase.users.filter(s => s.class === 'Junior Four').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+    // Get kindergarten classes
+    BABY_CLASS: localKindergartenStudentDatabase.users.filter(s => s.class === 'Baby Class').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+    MIDDLE_CLASS: localKindergartenStudentDatabase.users.filter(s => s.class === 'Middle Class').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+    TOP_CLASS: localKindergartenStudentDatabase.users.filter(s => s.class === 'Top Class').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+    PRE_PRIMARY_CLASS_HERONS: localKindergartenStudentDatabase.users.filter(s => s.class === 'Pre Primary Class Herons').map(s => ({ name: s.name, dob: s.dateOfBirth || '', school_pay_code: s.schoolPayCode || '' })),
+  },
+  users: [
+    ...localJuniorStudentDatabase.users,
+    ...localKindergartenStudentDatabase.users
+  ]
 };

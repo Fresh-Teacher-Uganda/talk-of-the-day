@@ -7,6 +7,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { LogOut, Sun, Moon, User, Settings } from 'lucide-react';
+import { getTeacherInitials } from '@/utils/teacherAvatarUtils';
+import defaultAvatar from '@/assets/default-avatar.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -100,9 +102,12 @@ export const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
                   <img 
-                    src={profileData?.avatar || user.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face'} 
-                    alt={getFirstName() || user.name} 
+                    src={profileData?.avatar || user?.avatar || defaultAvatar} 
+                    alt={getFirstName() || user?.name || 'User'} 
                     className="h-full w-full rounded-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = defaultAvatar;
+                    }}
                   />
                 </Button>
               </DropdownMenuTrigger>

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { localStudentDatabase } from '@/data/studentdata';
+import { localStudentDatabase } from '@/data/userDatabase';
 
 interface AttendanceRecord {
   id: string;

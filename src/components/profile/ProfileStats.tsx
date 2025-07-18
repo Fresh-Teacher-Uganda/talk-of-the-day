@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useAuth } from '@/contexts/AuthContext';
 import { localJuniorTeachersDatabase } from '@/data/juniorTeachersData';
 import { localKindergartenTeachersDatabase } from '@/data/kindergartenTeachersData';
-import { localStudentDatabase } from '@/data/studentdata';
+import { localStudentDatabase } from '@/data/userDatabase';
 
 export const ProfileStats: React.FC = () => {
   const { user } = useAuth();

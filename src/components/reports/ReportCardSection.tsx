@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GraduationCap, Download, Printer } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { ProfessionalReportCard } from './ProfessionalReportCard';
+import { ReportCard } from './ReportCard';
 
 interface ReportCardSectionProps {
   reportCards: any[];
@@ -256,7 +256,7 @@ export const ReportCardSection: React.FC<ReportCardSectionProps> = ({ reportCard
               Close
             </Button>
           </div>
-          <ProfessionalReportCard 
+          <ReportCard 
             data={sampleData} 
             studentId={selectedStudent}
           />

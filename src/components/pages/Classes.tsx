@@ -20,7 +20,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { ClassDialog } from '@/components/classes/ClassDialog';
 import { ClassDetailsDialog } from '@/components/classes/ClassDetailsDialog';
-import { localStudentDatabase } from '@/data/studentdata';
+import { localStudentDatabase } from '@/data/userDatabase';
 import { classes as classesDefinitions } from '@/data/classes';
 import { getSubjectById as getSubjectData } from '@/data/subjects';
 

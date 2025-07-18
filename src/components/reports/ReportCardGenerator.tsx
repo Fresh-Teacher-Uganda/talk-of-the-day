@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ProfessionalReportCard } from './ProfessionalReportCard';
+import { ReportCard } from './ReportCard';
 import { ReportSelectionForm } from './ReportSelectionForm';
 import { ReportSelectionSummary } from './ReportSelectionSummary';
 import { useReportGenerator } from './hooks/useReportGenerator';
@@ -47,7 +47,7 @@ export const ReportCardGenerator: React.FC = () => {
       
       {isReportReady && (
         <div className="mt-6">
-          <ProfessionalReportCard 
+          <ReportCard 
             data={reportData} 
             studentId={selections.selectedStudentId} 
           />

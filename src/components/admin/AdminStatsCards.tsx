@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, School, TrendingUp, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import AnimatedInView from '../AnimatedInView';
-import { localStudentDatabase } from '@/data/studentdata';
+import { localStudentDatabase } from '@/data/userDatabase';
 
 export const AdminStatsCards = () => {
   const [loading, setLoading] = useState(true);

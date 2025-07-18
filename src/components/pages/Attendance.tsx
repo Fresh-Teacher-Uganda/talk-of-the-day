@@ -17,7 +17,7 @@ import { LoadingClassGrid, LoadingStatsCards, LoadingTable } from '@/components/
 import { LoadingProgress } from '@/components/ui/loading-progress';
 import { ColorfulSpinner } from '@/components/ui/colorful-spinner';
 import { format } from 'date-fns';
-import { localStudentDatabase } from '@/data/studentdata';
+import { localStudentDatabase } from '@/data/userDatabase';
 
 export const Attendance = () => {
   const { user } = useAuth();

@@ -30,8 +30,7 @@ export {
 
 // Keep existing user data exports
 export * from './userDatabase';
-export * from './localDatabase';
-export * from './studentdata';
+export * from './juniorStudentData';
 export * from './juniorTeachersData';
 export * from './kindergartenTeachersData';
 export * from './parentdata';
