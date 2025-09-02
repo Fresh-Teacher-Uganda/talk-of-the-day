@@ -32,7 +32,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onRestrictedUser }) => {
       if (result.success) {
         toast({
           title: "Login Successful",
-          description: "Welcome to Glorious Schools!",
+          description: "Welcome to Springing Stars Junior School!",
         });
         // Navigate to dashboard after successful login
         navigate('/');
@@ -64,43 +64,31 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onRestrictedUser }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Input
-          id="email"
-          type="email"
-          placeholder="School e-mail"
+        <Label htmlFor="email">Email Address</Label>
+        <EmailInput
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 h-12 text-base"
+          onChange={setEmail}
+          placeholder="Start typing your email..."
         />
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
         <Input
           id="password"
           type="password"
-          placeholder="Password"
+          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 h-12 text-base"
         />
-        
-        <div className="flex items-center space-x-2">
-          <input 
-            type="checkbox" 
-            id="remember" 
-            className="w-4 h-4 text-orange-500 bg-gray-700 border-gray-600 rounded focus:ring-orange-500"
-          />
-          <label htmlFor="remember" className="text-white text-sm">Remember Me</label>
-        </div>
       </div>
 
       <Button 
         type="submit" 
-        className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white h-12 text-lg font-semibold shadow-lg"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         disabled={isLoading}
       >
         {isLoading ? (
@@ -109,15 +97,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onRestrictedUser }) => {
             <span>Signing in...</span>
           </div>
         ) : (
-          <span>Login</span>
+          <div className="flex items-center space-x-2">
+            <LogIn className="h-4 w-4" />
+            <span>Sign In</span>
+          </div>
         )}
       </Button>
-      
-      <div className="text-center">
-        <a href="#" className="text-blue-300 hover:text-blue-200 text-sm underline">
-          Forgot E-mail?
-        </a>
-      </div>
     </form>
   );
 };

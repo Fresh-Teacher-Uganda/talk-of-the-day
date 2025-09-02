@@ -23,12 +23,12 @@ export const Footer = () => {
             <div className="flex items-center space-x-3">
               <img 
                 src="https://springingstars.ac.ug/wp-content/uploads/2023/04/logo.png" 
-                alt="Glorious Schools Logo" 
+                alt="Springing Stars Logo" 
                 className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
               />
               <div>
-                <h3 className="text-base sm:text-lg font-bold">Glorious Schools</h3>
-                <p className="text-xs sm:text-sm text-blue-200">Excellence in Education</p>
+                <h3 className="text-base sm:text-lg font-bold">Springing Stars</h3>
+                <p className="text-xs sm:text-sm text-blue-200">Junior School</p>
               </div>
             </div>
             <p className="text-xs sm:text-sm text-blue-200">
@@ -86,7 +86,7 @@ export const Footer = () => {
 
         <div className="border-t border-blue-800 mt-6 sm:mt-8 pt-4 sm:pt-6 text-center">
           <p className="text-xs sm:text-sm text-blue-200">
-            © {currentYear} Glorious Schools. All rights reserved.
+            © {currentYear} Springing Stars Junior School. All rights reserved.
           </p>
         </div>
       </div>
