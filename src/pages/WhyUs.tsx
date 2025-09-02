@@ -69,10 +69,10 @@ const WhyUs = () => {
     <Layout>
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-blue-900">Why Choose Springing Stars?</h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover what makes Springing Stars Junior School the preferred choice for quality 
-            primary education in Uganda
+          <h1 className="text-4xl font-bold text-primary">Why Choose Glorious Schools?</h1>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            Discover what makes Glorious Schools the preferred choice for quality 
+            education in Uganda
           </p>
         </div>
 

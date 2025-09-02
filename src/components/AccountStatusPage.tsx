@@ -77,16 +77,16 @@ export const AccountStatusPage: React.FC<AccountStatusPageProps> = ({ user }) =>
         {/* School Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-2">
-            <img 
-              src="https://springingstars.ac.ug/wp-content/uploads/2023/04/logo.png" 
-              alt="Springing Stars Logo" 
-              className="h-16 w-16 object-contain"
-            />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-blue-900">Springing Stars</h1>
-            <p className="text-xl text-blue-700">Junior School</p>
-          </div>
+          <img 
+            src="https://springingstars.ac.ug/wp-content/uploads/2023/04/logo.png" 
+            alt="Glorious Schools Logo" 
+            className="h-16 w-16 object-contain"
+          />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold text-primary">Glorious Schools</h1>
+          <p className="text-xl text-primary/80">Excellence in Education</p>
+        </div>
         </div>
 
         {/* Status Card */}

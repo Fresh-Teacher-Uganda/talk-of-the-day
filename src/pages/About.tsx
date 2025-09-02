@@ -9,8 +9,8 @@ const About = () => {
     <Layout>
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-blue-900">About Springing Stars Junior School</h1>
-          <p className="text-lg text-gray-600">
+          <h1 className="text-4xl font-bold text-primary">About Glorious Schools</h1>
+          <p className="text-lg text-muted-foreground">
             Nurturing young minds for a brighter tomorrow in Uganda
           </p>
         </div>
@@ -19,8 +19,8 @@ const About = () => {
           <CardContent className="p-8">
             <div className="space-y-6">
               <p className="text-lg leading-relaxed">
-                Springing Stars Junior School is a premier educational institution located in Uganda, 
-                dedicated to providing quality primary education that prepares our students for success 
+                Glorious Schools is a premier educational institution located in Uganda, 
+                dedicated to providing quality education that prepares our students for success 
                 in their academic journey and beyond.
               </p>
               

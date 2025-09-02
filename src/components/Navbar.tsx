@@ -73,15 +73,15 @@ export const Navbar = () => {
           <div className="flex items-center space-x-2 sm:space-x-3 cursor-pointer" onClick={handleLogoClick}>
             <img 
               src="https://springingstars.ac.ug/wp-content/uploads/2023/04/logo.png" 
-              alt="Springing Stars Logo" 
+              alt="Glorious Schools Logo" 
               className="h-8 w-8 sm:h-10 sm:w-10 object-contain hover:opacity-80 transition-opacity"
             />
             <div className="hidden sm:block">
-              <h1 className="text-lg sm:text-xl font-bold text-primary hover:text-primary/80 transition-colors">Springing Stars</h1>
-              <p className="text-xs sm:text-sm text-primary/70">Junior School</p>
+              <h1 className="text-lg sm:text-xl font-bold text-primary hover:text-primary/80 transition-colors">Glorious Schools</h1>
+              <p className="text-xs sm:text-sm text-primary/70">Excellence in Education</p>
             </div>
             <div className="sm:hidden">
-              <h1 className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">Springing Stars</h1>
+              <h1 className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">Glorious Schools</h1>
             </div>
           </div>
         </div>

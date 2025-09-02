@@ -6,19 +6,17 @@ export const SchoolHeader = () => {
   return (
     <div className="text-center space-y-4">
       <div className="flex items-center justify-center space-x-2">
-        <div className="relative">
+        <div className="relative bg-white rounded-full p-3 shadow-lg">
           <img 
             src="https://springingstars.ac.ug/wp-content/uploads/2023/04/logo.png" 
-            alt="Springing Stars Logo" 
-            className="h-16 w-16 object-contain"
+            alt="Glorious Schools Logo" 
+            className="h-12 w-12 object-contain"
           />
-          <Star className="h-6 w-6 text-orange-500 absolute -top-1 -right-1" />
+          <Star className="h-5 w-5 text-orange-500 absolute -top-1 -right-1" />
         </div>
       </div>
       <div>
-        <h1 className="text-3xl font-bold text-blue-900">Springing Stars</h1>
-        <p className="text-xl text-blue-700">Junior School</p>
-        <p className="text-sm text-gray-600 mt-2">School Management System - Uganda</p>
+        <h1 className="text-4xl font-bold text-white drop-shadow-lg">Glorious Schools</h1>
       </div>
     </div>
   );
